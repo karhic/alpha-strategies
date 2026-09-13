@@ -12,9 +12,42 @@ A reader should be able to:
 2. trace every input to a documented source;
 3. rebuild/download the data using provided scripts;
 4. verify that only information available at the decision time is visible to the strategy;
-5. reproduce the historical analytics and published Freeburg fingerprints;
-6. inspect the resulting signals/trades; and
-7. run the same strategy logic through a replay, paper, or live adapter without rewriting the rule itself.
+5. replay historical data through the exact strategy code used live;
+6. inspect the resulting canonical ledger of events, decisions, orders and fills; and
+7. calculate performance independently from that ledger.
+
+The core invariant is:
+
+> **Historical backtest = chronological replay through the same strategy implementation used live.**
+
+There is no separate Freeburg backtester containing alternate signal logic.
+
+## Runtime boundary
+
+`karhic/causal-trading-engine` is the generic runtime for Freeburg.
+
+Freeburg supplies strategy code, configuration and normalized point-in-time `DataEvent` streams. The runtime supplies the causal clock/data barrier, replay/live event loop, execution abstraction and append-only ledger.
+
+The Freeburg strategy must not know whether it is being replayed or run live. It receives the same generic context and emits the same generic targets/actions in either case.
+
+`karhic/open-alpha-verifier` is **not** an alternative Freeburg runtime. It is an optional downstream verification project for independently checking published strategy outputs/ledgers, especially when strategy logic is private.
+
+## Canonical output
+
+The canonical product of a historical replay is the raw runtime ledger, not a Sharpe ratio or chart.
+
+The ledger should contain enough information to independently reconstruct the run:
+
+- run manifest and code/config identity;
+- consumed data events and their point-in-time timestamps;
+- strategy actions / target weights;
+- submitted orders;
+- fills;
+- any required account/portfolio state emitted by the runtime.
+
+Performance statistics and plots are downstream analytics. They should be reproducible from the ledger without rerunning or reimplementing the strategy.
+
+This separation makes the claim easy to audit: the same strategy code generated the historical decisions and the live decisions; analytics merely summarize the resulting ledger.
 
 ## The six sleeves
 
@@ -41,8 +74,8 @@ The mean-return fingerprint is therefore essentially replicated. The main unreso
 
 ## Project policy
 
-This clean project ports canonical results, source logic, timing conventions, and accounting from the scratchpad. It does not silently replace them with new approximations.
+This clean project ports canonical results, source logic, timing conventions and accounting from the scratchpad. It does not silently replace them with new approximations.
 
 Where a result is unresolved, the unresolved state is documented explicitly rather than tuned away.
 
-The standalone replay/live infrastructure remains outside this repository. Freeburg should be able to plug into an engine such as `causal-trading-engine` or `open-alpha-verifier`, but those repositories remain generic and contain no Freeburg-specific implementation.
+The generic runtime remains outside this repository. Freeburg-specific strategy and data code live here; generic replay/live machinery stays in `causal-trading-engine`; analytics and optional third-party verification remain downstream concerns.
