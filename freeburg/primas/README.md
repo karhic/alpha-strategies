@@ -1,86 +1,78 @@
 # Primas
 
-Primas is the first Freeburg sleeve taken through the clean production pipeline.
+Weekly market-timing strategy documented by Nelson Freeburg.
 
 ## Rule
 
-Evaluate once per week. Risk-on only when both conditions are true:
+Risk-on when both are true:
 
-1. S&P 500 level is above its 52-week simple moving average.
-2. 3-month commercial-paper yield is below its 52-week simple moving average.
+1. S&P 500 > its 52-week simple moving average
+2. 3-month commercial-paper yield < its 52-week simple moving average
 
-Otherwise the sleeve is risk-off.
+Otherwise risk-off.
 
-The rule is intentionally trivial to inspect. All complexity belongs outside the rule: data provenance, point-in-time availability, execution, ledger generation, and analytics.
+## Results
 
-## Published fingerprint
+### Freeburg vs reconstruction, 1970-2013
 
-Freeburg reports approximately **12.1% compound annual return and -16.4% maximum drawdown**.
+| Metric | Freeburg | Reconstruction |
+|---|---:|---:|
+| CAGR | 12.1% | **12.08%** |
+| Max drawdown | -16.4% | **-16.43%** |
+| Sharpe | — | **1.43** |
+| Equity exposure | — | **39.52%** |
+| Risk-on entries | — | **43** |
 
-The corrected scratchpad reconstruction, using full commercial-paper carry and the constant/month-start pre-1971 seed convention, produced:
+Reconstruction period: **1970-12-25 to 2013-09-27** (2,232 weeks).
 
-- period: 1970-12-25 through 2013-09-27
-- weeks: 2,232
-- CAGR: 12.0799%
-- Sharpe: 1.4344
-- maximum drawdown: -16.4293%
-- max-DD peak: 1998-07-10
-- max-DD trough: 1998-09-25
-- equity exposure: 39.5161%
-- risk-on entries: 43
+The clean causal replay independently reproduces the same 2,232 decisions, 39.5161% equity exposure and 43 risk-on transitions.
 
-This is an essentially exact fingerprint match, not an optimization target.
+### Post-2013, out of sample
 
-## Clean replay result
+Period: **2013-10-04 to 2026-09-04**.
 
-A fresh clone of the clean project now rebuilds the Primas signal stream from public sources, replays it through `causal-trading-engine` in decision-only mode, and emits the canonical JSONL ledger.
+| Metric | Primas | S&P 500* |
+|---|---:|---:|
+| CAGR | **7.58%** | 14.33% |
+| Sharpe | **0.91** | 0.91 |
+| Max drawdown | **-13.20%** | -31.67% |
+| Terminal wealth | **2.57x** | 5.64x |
+| Equity exposure | **37.63%** | 100% |
+| Risk-on entries | **21** | — |
 
-The clean ledger reproduces the historical signal fingerprint exactly over the presentation sample:
+\*Same weekly S&P total-return approximation used for comparison.
 
-- weekly decisions: 2,232
-- equity exposure: 39.516129%
-- 0->1 risk-on transitions: 43
-- first valid decision: 1970-12-25
-- last decision: 2013-09-27
+The post-2013 figures are not part of Freeburg's published sample.
 
-A separate downstream analytics package, containing no Primas strategy logic, reproduces the canonical performance result from the dated return stream:
+## Data provenance
 
-- terminal wealth: 131.116531
-- CAGR: 12.0798959%
-- Sharpe: 1.4343612
-- maximum drawdown: -16.4293373%
-- drawdown peak: 1998-07-10
-- drawdown trough: 1998-09-25
+### S&P 500
 
-## Separation of concerns
+- Signal input: weekly S&P 500 level
+- Source used by the clean rebuild: Yahoo Finance `^GSPC` daily history
+- Normalization: final observation of each Friday week
+- Dividends are used only for return accounting, not for the signal
 
-Primas owns only:
+### 3-month commercial paper
 
-- the published rule;
-- logical dataset requirements;
-- source/provenance documentation;
-- benchmark and live configuration;
-- sleeve-specific tests and expected fingerprints.
+The historical series is explicitly spliced because no single source covers the full sample:
 
-`causal-trading-engine` owns chronological replay, point-in-time visibility, broker abstraction, simulation/live execution, and the canonical append-only ledger.
+- **pre-April 1971:** NBER Macrohistory `m13002` (60-90 day prime commercial paper), month-start stamped and carried forward weekly
+- **April 1971-August 1997:** Federal Reserve H.15 `H0.RIFSPPCM03_N.WF`
+- **September 1997 onward:** Federal Reserve `RIFSPPNAAD90_N.WF` (90-day nonfinancial AA commercial paper)
 
-A separate analytics project consumes ledger/return artifacts and calculates CAGR, drawdown, Sharpe, exposure, charts, tables, and comparison reports. Analytics must never feed information back into the strategy runtime.
+Federal Reserve numeric missing-value sentinels such as `-9999` are discarded before normalization.
 
-## Same code live and replay
+### Return accounting
 
-The production requirement is stronger than merely sharing formulas: historical replay and live paper trading instantiate the same `PrimasStrategy` class. The strategy has no mode flag and no direct provider or broker access.
+- Risk-on: S&P 500 weekly price return + weekly dividend-yield accrual
+- Risk-off: commercial-paper yield / 52
+- Headline replication uses 100% commercial-paper carry
 
-Historical and live systems may use different data adapters, but both adapters emit the same logical event identities and availability semantics. An explicit weekly decision event ensures both required inputs are visible before evaluation.
+Historical dividend data were reconstructed from contemporaneous Standard & Poor's observations preserved in FRASER's *Economic Indicators* archive, with later archived S&P observations where required.
 
-## Status
+## Reproducibility
 
-- published rule: recovered
-- historical fingerprint: essentially exact
-- standalone public-source signal rebuild: complete
-- causal decision replay: complete
-- signal fingerprint parity: exact
-- downstream analytics separation: working locally in a separate Git repository
-- historical accounting oracle: exact canonical match
-- IBKR paper execution: next
-- replay of archived IBKR paper events: next after adapter wiring
-- public callout publishing: downstream adapter, never strategy logic
+`build_historical_events.py` rebuilds the weekly signal inputs from public sources. `run_replay.py` replays them through the same `PrimasStrategy` used for paper/live trading and emits the canonical decision ledger.
+
+Research provenance and the original diagnostics remain in `karhic/edge-research-scratchpad`.
