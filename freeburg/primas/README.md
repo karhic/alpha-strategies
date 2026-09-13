@@ -31,6 +31,27 @@ The corrected scratchpad reconstruction, using full commercial-paper carry and t
 
 This is an essentially exact fingerprint match, not an optimization target.
 
+## Clean replay result
+
+A fresh clone of the clean project now rebuilds the Primas signal stream from public sources, replays it through `causal-trading-engine` in decision-only mode, and emits the canonical JSONL ledger.
+
+The clean ledger reproduces the historical signal fingerprint exactly over the presentation sample:
+
+- weekly decisions: 2,232
+- equity exposure: 39.516129%
+- 0->1 risk-on transitions: 43
+- first valid decision: 1970-12-25
+- last decision: 2013-09-27
+
+A separate downstream analytics package, containing no Primas strategy logic, reproduces the canonical performance result from the dated return stream:
+
+- terminal wealth: 131.116531
+- CAGR: 12.0798959%
+- Sharpe: 1.4343612
+- maximum drawdown: -16.4293373%
+- drawdown peak: 1998-07-10
+- drawdown trough: 1998-09-25
+
 ## Separation of concerns
 
 Primas owns only:
@@ -41,22 +62,25 @@ Primas owns only:
 - benchmark and live configuration;
 - sleeve-specific tests and expected fingerprints.
 
-`causal-trading-engine` owns chronological replay, point-in-time visibility, broker abstraction, simulation, live/paper mode, and the canonical append-only ledger.
+`causal-trading-engine` owns chronological replay, point-in-time visibility, broker abstraction, simulation/live execution, and the canonical append-only ledger.
 
-A separate analytics project should consume that ledger and calculate CAGR, drawdown, Sharpe, exposure, charts, tables, and comparison reports. Analytics must never feed information back into the strategy runtime.
+A separate analytics project consumes ledger/return artifacts and calculates CAGR, drawdown, Sharpe, exposure, charts, tables, and comparison reports. Analytics must never feed information back into the strategy runtime.
 
 ## Same code live and replay
 
-The production requirement is stronger than merely sharing formulas: historical replay and live paper trading must instantiate the same Primas strategy class. The strategy must have no mode flag and no direct provider or broker access.
+The production requirement is stronger than merely sharing formulas: historical replay and live paper trading instantiate the same `PrimasStrategy` class. The strategy has no mode flag and no direct provider or broker access.
 
-Historical and live systems may use different data adapters, but both adapters must emit the same logical event identities and availability semantics.
+Historical and live systems may use different data adapters, but both adapters emit the same logical event identities and availability semantics. An explicit weekly decision event ensures both required inputs are visible before evaluation.
 
 ## Status
 
 - published rule: recovered
-- historical fingerprint: essentially replicated
-- historical accounting: recovered from canonical scratchpad diagnostics
-- exact source lineage: documented in `DATA.md`
-- causal replay port: next
-- IBKR paper execution: next after replay parity
+- historical fingerprint: essentially exact
+- standalone public-source signal rebuild: complete
+- causal decision replay: complete
+- signal fingerprint parity: exact
+- downstream analytics separation: working locally in a separate Git repository
+- historical accounting oracle: exact canonical match
+- IBKR paper execution: next
+- replay of archived IBKR paper events: next after adapter wiring
 - public callout publishing: downstream adapter, never strategy logic
