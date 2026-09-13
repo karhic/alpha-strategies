@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Freeburg generated replay artifacts
+freeburg/*/data/*benchmark_events.jsonl
+freeburg/*/runs/

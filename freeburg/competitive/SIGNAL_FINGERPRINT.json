@@ -1,0 +1,11 @@
+{
+  "profile": "public_pit_10y_7day_90pct_cash",
+  "start": "1970-07-31",
+  "end": "2013-09-27",
+  "weekly_decisions": 2253,
+  "equity_exposure_fraction": 0.501553,
+  "risk_on_entries": 80,
+  "cagr": 0.128558,
+  "max_drawdown": -0.33921,
+  "pit_weekly_inputs_sha256": "e3a04fabc57468b51c1ccc6caf1a4e9d1792aa518d588428432f73f9b5013eda"
+}

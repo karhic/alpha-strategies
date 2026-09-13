@@ -1,0 +1,11 @@
+{
+  "profile": "strict_pit_public",
+  "start": "1971-08-27",
+  "end": "2013-09-27",
+  "weekly_decisions": 2197,
+  "equity_exposure_fraction": 0.292217,
+  "risk_on_entries": 52,
+  "cagr_full_cash": 0.102523,
+  "max_drawdown_full_cash": -0.113404,
+  "pit_weekly_inputs_sha256": "e70a706e97329ce33a6398204f8a838486dca0c38cfb194d4a4e1ccc7b13ad49"
+}
