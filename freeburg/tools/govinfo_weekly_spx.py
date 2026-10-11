@@ -51,7 +51,18 @@ def parse_weekly_table(rows: list[list[str]], issue: str, source: str) -> list[d
         try:
             period=date(yr,mo,day)
         except ValueError:continue
-        # Published issue sometimes erroneously labels January with prior year.\n        if issue[:4] != str(yr) and mo == 1 and period.year == int(issue[:4])-1:\n            period=date(int(issue[:4]),mo,day)\n        # Some tables omit the month change on a trailing bare day.\n        if period.weekday()!=5 and bare and mo is not None:\n            next_month=mo+1 if mo<12 else 1\n            next_year=yr if mo<12 else yr+1\n            try:\n                possible=date(next_year,next_month,day)\n                if possible.weekday()==5: period=possible;yr=next_year;mo=next_month\n            except ValueError: pass\n        if period.weekday()!=5: # Source normally labels Saturday-ending weeks.
+        # Published issue sometimes erroneously labels January with prior year.
+        if issue[:4] != str(yr) and mo == 1 and period.year == int(issue[:4])-1:
+            period=date(int(issue[:4]),mo,day)
+        # Some tables omit the month change on a trailing bare day.
+        if period.weekday()!=5 and bare and mo is not None:
+            next_month=mo+1 if mo<12 else 1
+            next_year=yr if mo<12 else yr+1
+            try:
+                possible=date(next_year,next_month,day)
+                if possible.weekday()==5: period=possible;yr=next_year;mo=next_month
+            except ValueError: pass
+        if period.weekday()!=5: # Source normally labels Saturday-ending weeks.
             raise ValueError(f"Unexpected weekly label {period} in {issue}")
         price=_float(row[6]); div=_float(row[8])
         if price is None or price<10:
