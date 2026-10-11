@@ -101,3 +101,36 @@ python -m freeburg.prime_discount.build_fed_public_events \
 ```
 
 The input S&P benchmark file in this command is for **private validation only** until redistribution rights are addressed.
+
+## Prime/Discount legacy reproduction breakthrough (2026-10-11)
+
+The initial Fed H.15 alternative's **140/2233** mismatching decisions (restricted to 1970-2013) are explained by **different series definitions**, not a malfunction of the normalizer. Swapping just the prime-rate source or just the discount source also changes signals. The gap is most acute after the January 2003 credit-window regime change.
+
+We found user-side **FRED observations JSON** backups on the VPS (snapshots from June 2026). Comparing these JSONs independently against the benchmark's frozen change events produced **exactly identical rate values for every one of 2,387 common weekly dates**, for both:
+- `DPRIME` (bank prime), and
+- `INTDSRUSM193N` (IMF-provided historical discount series).
+
+An explicit FRED JSON import mode was added, requiring users to provide both observation responses:
+
+```bash
+python -m freeburg.prime_discount.build_fed_public_events \
+  --prices /path/to/locally_obtained_spx_weekly.csv \
+  --fred-prime-json /path/to/DPRIME.json \
+  --fred-discount-json /path/to/INTDSRUSM193N.json \
+  --output /tmp/freeburg-prime-discount-legacy.jsonl
+
+python -m freeburg.prime_discount.compare_sources \
+  --prices /path/to/locally_obtained_spx_weekly.csv \
+  --reference-rates /path/to/private_reference_rate_change_events.csv \
+  --candidate-events /tmp/freeburg-prime-discount-legacy.jsonl
+```
+
+**Actual full-window test, 1970-01-02 through 2013-09-27:** **2,283/2,283 weekly decisions match**, zero input-level differences for prime/discount/SPX, **60/60 entries**, and **791/791 risk-on weeks**. The event builder generated **9,548 events / 2,387 decision events** from the frozen research SPX prices and saved FRED JSON.
+
+**Fed H.15 alternative over the same window:** **2,233 overlapping decision weeks**, **140 different decisions**, agreement **93.7304%**, and **42** entries instead of 60. The differing H.15 source definition therefore must be labelled as an **alternative model**. It must **not** be substituted for the published benchmark.
+
+**Important:** This proves reconstruction from **these saved JSON snapshots**, *not* that an unauthenticated/free fresh FRED download is automatically available or that FRED / IMF / Yahoo allow republication of the data. FRED API downloads may require a free API key, and FRED's third-party series rights still apply. The historical INTDSRUSM193N observations also do **not** establish point-in-time publication availability; they are retrospective snapshots.
+
+Six local unit tests passed (normalization, GovInfo parsing, FRED JSON and parity checks). An updated GitHub CI workflow covers all six.
+
+**Remaining decision:** make the original Prime/Discount benchmark optionally reproducible from **user-obtained FRED JSON (free access subject to terms)**, and retain official H.15 as an explicitly different source profile. This is much stronger than silently presenting H.15 as equivalent.
