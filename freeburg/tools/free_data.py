@@ -184,7 +184,7 @@ def parse_govinfo_monthly_rows(rows: list[list[str]], *, period_col: int,
             continue
         label = str(row[period_col]).strip()
         full = re.fullmatch(r"((?:19|20)\d{2}):\s*([A-Za-z]{3,9})\.?", label)
-        short = re.fullmatch(r"([A-Za-z]{3,9})", label)
+        short = re.fullmatch(r"([A-Za-z]{3,9})\.?", label)
         if full:
             current_year = int(full.group(1))
             mon = MONTHS.get(full.group(2)[:3].lower())
