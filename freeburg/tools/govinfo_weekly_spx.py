@@ -87,13 +87,14 @@ def parse_weekly_table(rows: list[list[str]], issue: str, source: str, anomalies
 
 def extract_directory(path: Path, out: Path) -> dict:
     records=[]
+    anomalies=[]
     successes=0
     for file in sorted(path.rglob("ECONI-????-??-Pg31.xls")):
         issue=file.name[6:13]
         source=f"https://www.govinfo.gov/content/pkg/ECONI-{issue}/xls/ECONI-{issue}-Pg31.xls"
         rows=govinfo_preview(file,max_rows=1000)
         try:
-            parsed=parse_weekly_table(rows,issue,source)
+            parsed=parse_weekly_table(rows,issue,source,anomalies=anomalies)
         except ValueError as exc:
             raise ValueError(f"{file}: {exc}") from exc
         records.extend(parsed)
@@ -107,6 +108,8 @@ def extract_directory(path: Path, out: Path) -> dict:
     return {"files":successes,"rows":len(records),"unique_fridays":len(set(r["friday"] for r in records)),
             "first":min(r["friday"] for r in records),
             "last":max(r["friday"] for r in records),"output":str(out),
+            "invalid_label_count":len(anomalies),
+            "invalid_labels":anomalies[:20],
             "status":"RESEARCH_PROXY_NO_TRADING_TIMESTAMP"}
 
 
