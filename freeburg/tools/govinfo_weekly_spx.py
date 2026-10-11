@@ -20,7 +20,7 @@ MONTHS = {s.lower():i for i,s in enumerate(
 def parse_weekly_table(rows: list[list[str]], issue: str, source: str) -> list[dict]:
     if not rows or "Common Stock Prices and Yields" not in str(rows[0][0]):
         raise ValueError("Wrong economic table")
-    if len(rows)<4 or len(rows[3])<10 or "Standard" not in str(rows[3][6]):
+    if len(rows)<4 or not any("Standard" in str(r[6]) for r in rows[:5] if len(r)>6):
         raise ValueError("Unexpected S&P column layout: inspect manually")
     in_weekly=False
     yr=None; mo=None
@@ -51,7 +51,7 @@ def parse_weekly_table(rows: list[list[str]], issue: str, source: str) -> list[d
         try:
             period=date(yr,mo,day)
         except ValueError:continue
-        if period.weekday()!=5: # Source normally labels Saturday-ending weeks.
+        # Published issue sometimes erroneously labels January with prior year.\n        if issue[:4] != str(yr) and mo == 1 and period.year == int(issue[:4])-1:\n            period=date(int(issue[:4]),mo,day)\n        # Some tables omit the month change on a trailing bare day.\n        if period.weekday()!=5 and bare and mo is not None:\n            next_month=mo+1 if mo<12 else 1\n            next_year=yr if mo<12 else yr+1\n            try:\n                possible=date(next_year,next_month,day)\n                if possible.weekday()==5: period=possible;yr=next_year;mo=next_month\n            except ValueError: pass\n        if period.weekday()!=5: # Source normally labels Saturday-ending weeks.
             raise ValueError(f"Unexpected weekly label {period} in {issue}")
         price=_float(row[6]); div=_float(row[8])
         if price is None or price<10:
