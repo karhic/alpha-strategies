@@ -59,7 +59,7 @@ def comparison(price_csv: Path, benchmark_rates: Path, alternative_events: Path,
                start: str='1970-01-02', end: str='2013-09-27', window: int=50) -> dict:
     price=load_prices(price_csv)
     ix=pd.DatetimeIndex(sorted(price))
-    spx=pd.Series([price[d] for d in ix],index=ix,dtype=float)
+    spx=pd.Series([price[d.date()] for d in ix],index=ix,dtype=float)
     ref=frozen_rates(benchmark_rates,ix)
     alt=alternative_rates(alternative_events,ix)
     baseline=state(spx,ref['prime'],ref['discount'],window)
