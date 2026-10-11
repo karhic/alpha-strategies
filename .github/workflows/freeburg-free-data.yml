@@ -1,0 +1,22 @@
+name: Freeburg free-data utilities
+on:
+  push:
+    branches: [agent/freeburg-free-data-20261011]
+  pull_request:
+    paths:
+      - 'freeburg/tools/**'
+      - 'freeburg/tests/**'
+      - 'freeburg/prime_discount/build_fed_public_events.py'
+      - '.github/workflows/freeburg-free-data.yml'
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run standard-library free data tests
+        run: python -m unittest discover -s freeburg/tests -p 'test_free_data.py' -v
+      - name: Compile Fed data builder
+        run: python -m py_compile freeburg/prime_discount/build_fed_public_events.py
