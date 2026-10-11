@@ -240,3 +240,24 @@ python -m freeburg.tools.govinfo_weekly_spx \
 ```
 
 Both commands operate on original data source files and do not convert weekly government **averages** into S&P **Friday closes** or reconstruct valid time-of-publication.
+
+## GovInfo parser hardening / auditable outlier gate (same day)
+
+The 2010 issues previously rejected as invalid were **valid**; their header row differs by one position. The parser now locates the S&P header within the first five rows, and handles the explicitly documented 2010/2011 New Year boundary. **Reharvest of 2010-09 through 2010-12: 4/4 success, 20 weekly rows, 18 unique Friday labels**. This corrects the earlier blanket characterization of these four as unavailable/invalid.
+
+A separate **read-only** comparison script `freeburg/tools/audit_govinfo_prices.py` now flags grossly inconsistent weekly averages, never silently changing the source files. Against the private reference closes for the 2011–2013 subset, using a 500 basis-point audit threshold:
+- **138** overlapping weeks;
+- **median absolute deviation 62.9266 bps**;
+- exactly **one** extreme flagged week: **2013-03-01** (GovInfo **1,837.04** versus reference Friday close **1,518.20**, difference **2,100.119 bps**);
+- **zero** cross-issue conflicting values in the available overlapping observations.
+
+A discrepancy between a weekly average and a Friday close alone is **not** proof of bad data, but a >20% isolated departure is a strong audit flag. Users must investigate it rather than automatically deleting or imputing it. No alternate dataset has been treated as equivalent to the Friday-close benchmark.
+
+```bash
+python -m freeburg.tools.audit_govinfo_prices \
+  --govinfo-weekly local/govinfo_weekly_averages.csv \
+  --reference-prices local/user_obtained_spx_weekly.csv \
+  --threshold-bps 500
+```
+
+**Local regression suite:** 10 tests passed after header-layout and New Year fixes.
