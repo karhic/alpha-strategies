@@ -203,3 +203,19 @@ A live VPS end-to-end test (2026-10-11) produced:
 Not yet downloaded by this orchestrator: S&P index closes; user-obtained FRED API series `DPRIME` / `INTDSRUSM193N` (plus provider-rights check); remaining official CPI/Treasury / Moody's; historical FRASER first-publication PDFs; CRB / Dow DJ20 Heine inputs. GovInfo currently requires **explicit issue selection**, not a complete issue-range harvest. Its XLS observations have unverified availability dates, so they are not automatically injected into strategies.
 
 A fully reproducible release needs separate **source acquisition → validation → normalization → point-in-time timestamps → signal comparison → replay** steps. A successful GET request by itself does not satisfy these gates.
+
+## Government S&P weekly-price discovery (2026-10-11)
+
+The GovInfo **Common Stock Prices and Yields** table includes machine-readable **weekly S&P composite index averages**, not merely fundamentals. Added `freeburg/tools/govinfo_weekly_spx.py` to parse these observations with provenance. Live extraction of the October 2011 Excel table yielded **5 weekly observations** labelled Oct 8–Nov 5, corresponding to the Friday weeks Oct 7–Nov 4.
+
+**Crucial limitation: these are weekly AVERAGES, not Friday CLOSES.** Example: GovInfo's Oct 8 2011 weekly S&P average is **1,137.53**, whereas the research Yahoo-derived Friday close for Oct 7 was **1,155.46**. Replacing Freeburg close levels with government averages will change some trading decisions. The extractor explicitly emits `weekly_spx_average` and `WEEKLY_AVERAGE_NOT_FRIDAY_CLOSE__NO_PIT_CLAIM`, not `spx`. Furthermore, reported weeks may extend beyond the issue-month label, and the table is *published after observation*; never timestamp the figures as available on their labelled Fridays without a real publication date.
+
+To run against authorised local GovInfo Excel files:
+
+```bash
+python -m freeburg.tools.govinfo_weekly_spx \
+  --source-dir local/snapshots/2026-10-11/govinfo \
+  --output local/govinfo_weekly_spx_averages.csv
+```
+
+The extractor is an **independent no-cost proxy source**, not a legal or quantitative certification of the S&P Friday-close historical dataset. This distinction prevents an attractive but false claim of exact market-price reproduction.
