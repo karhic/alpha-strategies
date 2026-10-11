@@ -3,12 +3,27 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
-from freeburg.reproduce_available import summarize, SLEEVES
+from freeburg.reproduce_available import summarize, SLEEVES, HEADLINE_SLEEVES, select_sleeves
 
 class BatchReplayTests(unittest.TestCase):
     def test_five_real_sleeves_declared_heine_excluded(self):
         self.assertEqual(set(SLEEVES), {
             "primas","triple40","pushen","competitive","prime_discount"})
+
+    def test_default_baseline_is_four_sleeves(self):
+        self.assertEqual(select_sleeves("baseline"), HEADLINE_SLEEVES)
+
+    def test_opt_in_prime_discount(self):
+        self.assertEqual(select_sleeves("baseline", ["prime_discount"]), ("prime_discount",))
+
+    def test_source_replay_rejects_nonfundamental_sleeves(self):
+        self.assertEqual(select_sleeves("sources"), ("pushen", "competitive"))
+        with self.assertRaises(ValueError):
+            select_sleeves("sources", ["primas"])
+
+    def test_duplicate_sleeve_rejected(self):
+        with self.assertRaises(ValueError):
+            select_sleeves("baseline", ["primas", "primas"])
 
     def test_ledger_summary(self):
         with TemporaryDirectory() as d:

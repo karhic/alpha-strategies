@@ -99,4 +99,4 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Individual annual reports:** [Primas](freeburg/primas/reports/README.md) · [Triple-40](freeburg/triple40/reports/README.md) · [Pu Shen](freeburg/pushen/reports/README.md) · [Competitive Returns](freeburg/competitive/reports/README.md).
 
-**Reproduction tools and source notes:** [Freeburg data quickstart](freeburg/QUICKSTART_DATA.md) · [Release status](freeburg/RELEASE_STATUS.md). The annual portfolio statistics above use the same local weekly OOS research sample as the four individual sleeve reports.
+**Reproduction tools and source notes:** [Four-sleeve reproducibility/PIT audit](freeburg/FOUR_SLEEVE_AUDIT.md) · [Freeburg data quickstart](freeburg/QUICKSTART_DATA.md) · [Release status](freeburg/RELEASE_STATUS.md). The annual portfolio statistics above use the same local weekly OOS research sample as the four individual sleeve reports.
