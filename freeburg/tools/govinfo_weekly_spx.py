@@ -88,7 +88,7 @@ def parse_weekly_table(rows: list[list[str]], issue: str, source: str, anomalies
 def extract_directory(path: Path, out: Path) -> dict:
     records=[]
     successes=0
-    for file in sorted(path.glob("ECONI-????-??-Pg31.xls")):
+    for file in sorted(path.rglob("ECONI-????-??-Pg31.xls")):
         issue=file.name[6:13]
         source=f"https://www.govinfo.gov/content/pkg/ECONI-{issue}/xls/ECONI-{issue}-Pg31.xls"
         rows=govinfo_preview(file,max_rows=1000)
