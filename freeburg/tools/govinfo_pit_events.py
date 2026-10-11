@@ -32,11 +32,17 @@ def emit(input_file:Path,output_file:Path)->dict:
                     "payload":float(row["value"]),
                     "provenance":{"issue":row["issue"],"source_url":row["source_url"],
                                   "source_row":row["source_row"]}})
-    out.sort(key=lambda r:(r["available_at"],r["dataset"],r["event_time"]))
+    # Reprinted historical rows must not flood strategy state on catalog day.
+    latest={}
+    for ev in out:
+        key=(ev["dataset"],ev["available_at"])
+        if key not in latest or ev["event_time"]>latest[key]["event_time"]:
+            latest[key]=ev
+    out=sorted(latest.values(),key=lambda r:(r["available_at"],r["dataset"],r["event_time"]))
     output_file.parent.mkdir(parents=True,exist_ok=True)
     with output_file.open("x",encoding="utf-8") as f:
         for e in out:f.write(json.dumps(e,sort_keys=True)+"\n")
-    return {"events":len(out),"output":str(output_file),
+    return {"events":len(out),"suppressed_reprinted_history_rows":len(rows)-len(out),"output":str(output_file),
             "status":"ARCHIVE_RECORD_DATE_SENSITIVITY_NOT_VERIFIED_FIRST_RELEASE"}
 
 
