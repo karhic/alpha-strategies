@@ -57,3 +57,25 @@ The date and columns are intentionally required. Outputs are **preliminary extra
 6. Ship legally distributable sample data separately from user-supplied historical inputs.
 
 The tools are for reproducible validation, **not** a legal opinion or proof that vendor data may be redistributed.
+
+## Verified source probe (2026-10-11)
+
+A live GET from `https://www.govinfo.gov/content/pkg/ECONI-2011-10/xls/ECONI-2011-10-Pg31.xls` returned HTTP **200**, 39,424 bytes, genuine OLE Excel signature. Parsed locally with `pandas.read_excel(..., header=None)`: **41 rows × 10 columns**. The spreadsheet title is **Common Stock Prices and Yields**. Source columns are:
+
+- column **0**: Period;
+- column **6**: Standard & Poor's composite price index;
+- column **8**: dividend/price ratio;
+- column **9**: earnings/price ratio.
+
+Concrete example values in the sheet: **2010: Oct.** dividend ratio 1.97, earnings blank; **2011: Jan.** dividend ratio 1.84, earnings blank; **2011: Mar.** dividend ratio 1.90 and earnings ratio 6.13. Dots (`......`) denote missing observations, not zeros. Its rows include annual historical values and a rolling monthly window: distinguish them from contemporaneous observations; never backdate later publication vintages.
+
+This confirms **GovInfo's XLS avenue really works**, not merely that a speculative URL can be assembled. It **does not** establish the actual public-release date of the October 2011 issue, a systematic spreadsheet page/granule mapping for other years, or redistribution clearance for S&P-derived content.
+
+The converter handles month labels ending with periods, e.g. `2010: Oct.` and `Nov.`. To inspect this verified page locally:
+
+```bash
+python freeburg/tools/free_data.py govinfo-download --issue 2011-10 --page 31 --output local/econi-2011-10-p31.xls
+python freeburg/tools/free_data.py govinfo-preview --input local/econi-2011-10-p31.xls --rows 35
+```
+
+Keep extracted GovInfo rows separate from the frozen research inputs until their publication dates and signal implications have been validated.
