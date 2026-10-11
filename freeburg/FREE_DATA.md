@@ -146,3 +146,25 @@ GovInfo's official MODS metadata lists `dateIssued=2011-10-01` but `recordCreati
 **Important 2024 source issue:** dividends were represented as ellipses in a sampled 2024 table, despite earnings observations. The series can be partially missing even when a workbook loads successfully. A full historical harvest must record missingness and provider-specific changes, not fill from future issues.
 
 All **six local Python tests passed**, and the updated GitHub Actions workflows have also passed.
+
+## Independent FRASER fundamentals signal comparison (2026-10-11)
+
+Added a reproducible `freeburg/tools/compare_fraser_fundamentals.py` CLI. Executed it on the user's VPS against the preserved scratchpad FRASER first-published series and the original two clean-sleeve CSVs. The comparator uses a **heuristic** availability delay of the **first of the month following the recorded issue month**; this is a sensitivity analysis, **not proven first-publication timing**.
+
+| Sleeve | Compared signal weeks | Changed decisions | Percentage |
+|---|---:|---:|---:|
+| Competitive Returns | 2,929 | **197** | **6.73%** |
+| Pu Shen | 2,873 | **415** | **14.44%** |
+
+The dividend yield absolute difference had median **0.00 percentage points** (mean 0.13249); Pu Shen's earnings yield absolute difference had median **0.60761 percentage points** (mean 0.89334). These numbers include observations extending beyond the archive's end, where historical values are mechanically forward-filled; **do not interpret as a full independent 1970–2026 reconstruction**.
+
+Source archive last observations: FRASER dividend weekly series **2010-06-05**, FRASER earnings monthly/quarterly series **2010-03-01**. Later data therefore require GovInfo vintages or another lawful source; extending the last value to 2026 is not acceptable production behavior.
+
+This is decisive evidence that simply swapping in original archival FRASER observations is **not** an exact replay of the frozen models. It is valuable as an independent sensitivity check and an eventual stricter publication-aware variant. Neither headline historical return nor point-in-time status is inherited automatically.
+
+Run:
+```bash
+python -m freeburg.tools.compare_fraser_fundamentals \
+  --fraser-dir /path/to/edge-research-scratchpad/research/freeburg/data/fraser_sp500 \
+  --sleeve-dir freeburg
+```
