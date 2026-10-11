@@ -45,9 +45,11 @@ def harvest(start: str, end: str, dest: Path, *, pause_seconds: float=0.25,
             try:
                 record=downloader(source,path,"xls",timeout=45)
                 rows=govinfo_preview(path,max_rows=100)
-                parsed=parse_weekly_table(rows,issue,source)
+                anomalies=[]
+                parsed=parse_weekly_table(rows,issue,source,anomalies=anomalies)
                 record.update({"issue":issue,"status":"VALID_S_AND_P_WEEKLY_AVERAGE",
                                "weekly_rows":len(parsed),
+                               "excluded_invalid_rows":anomalies,
                                "first_friday":min(x["friday"] for x in parsed),
                                "last_friday":max(x["friday"] for x in parsed)})
             except Exception as exc:
