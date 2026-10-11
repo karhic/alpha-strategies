@@ -1,5 +1,7 @@
 # Freeburg
 
+> **Release status (11 October 2026):** Five historical strategy decision replays run successfully through the causal engine. The sixth (Heine) is **not** an exact historical reconstruction, and the independent free-source data profile remains subject to third-party licensing and original-vintage timing limitations. Start with [Release status](RELEASE_STATUS.md), [fresh-data quickstart](QUICKSTART_DATA.md), and [rebuild results](REBUILD_RESULTS_2026-10-11.md). Do **not** claim fully free, point-in-time, six-sleeve reproduction yet.
+
 Clean, auditable reconstruction of the six Freeburg timing sleeves.
 
 This directory consolidates the validated work from `karhic/edge-research-scratchpad` into a readable strategy project. The scratchpad remains the research archive; this directory is the clean implementation and documentation layer.
