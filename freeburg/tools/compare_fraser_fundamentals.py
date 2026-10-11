@@ -74,9 +74,9 @@ def analyze(sleeve: str, fraser_dir: Path, sleeve_dir: Path) -> dict:
         "changed_strategy_decisions":int(bad.sum()),
         "changed_decisions_percent":round(100*float(bad.sum())/max(1,int(common.sum())),4),
         "first_changed_dates":[str(d.date()) for d in bad[bad].index[:12]],
-        "limitations":"Frozen sleeve uses synthetic observation availability. Source may differ in "
-                      "measurement definition and later observations are forward-filled "
-                      "beyond archive end; do not interpret as full independent reconstruction.",
+        "limitations":"Frozen sleeve uses synthetic observation availability; source may differ in "
+                      "measurement definition. Comparison explicitly ends at FRASER "
+                      "archive observation coverage, not a full 2026 rebuild.",
     }
 
 
