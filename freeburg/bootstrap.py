@@ -18,7 +18,7 @@ from pathlib import Path
 from freeburg.tools.acquire_fresh import run as acquire_official
 from freeburg.tools.download_spx import download as acquire_spx
 from freeburg.tools.download_fred import download as acquire_fred
-from freeburg.tools.govinfo_harvest import harvest,months
+from freeburg.tools.govinfo_harvest import harvest
 
 def start(snapshot:Path, *, enable_yahoo_spx=False, fred_from_api=False,
           govinfo_start=None, govinfo_end=None, pause_seconds=.25)->dict:
@@ -45,7 +45,6 @@ def start(snapshot:Path, *, enable_yahoo_spx=False, fred_from_api=False,
         else:
             report["blockers"].append("No independent FRED DPRIME/IMF series: supply FRED_API_KEY")
         if govinfo_start and govinfo_end:
-            selected=months(govinfo_start,govinfo_end) if len(months(govinfo_start,govinfo_end))<=120 else None
             # Don't assume any one large archive request succeeds; chunk into
             # immutable blocks of at most 120 issues.
             start_y,start_m=map(int,govinfo_start.split("-"))
