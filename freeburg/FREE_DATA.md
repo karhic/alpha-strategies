@@ -168,3 +168,14 @@ python -m freeburg.tools.compare_fraser_fundamentals \
   --fraser-dir /path/to/edge-research-scratchpad/research/freeburg/data/fraser_sp500 \
   --sleeve-dir freeburg
 ```
+
+### Corrected coverage-capped FRASER comparison
+
+The first comparator run **incorrectly extrapolated the 2010 FRASER observation indefinitely to 2026**, inflating disagreement counts. That failure was identified and fixed: comparisons now stop at each series' last source observation, without future-period forward fill. The **superseding, accurate** diagnostics are:
+
+| Sleeve | Source-covered valid signal weeks | Differences | Difference rate | Median underlying value difference |
+| --- | ---: | ---: | ---: | ---: |
+| Competitive | **2,080** | **37** | **1.7788%** | 0.00 percentage points |
+| Pu Shen | **2,010** | **236** | **11.7413%** | 0.46422 percentage points |
+
+These numbers apply only to the existing FRASER series ending in **2010** and retain the deliberately provisional issue-date availability assumption. **They supersede the longer-period values above.** The archival dividend source aligns relatively closely; the earnings yield does not. This suggests prioritising the Pu Shen earnings-definition and reporting-vintage audit before spending more time on Competitive.
