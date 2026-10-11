@@ -179,3 +179,27 @@ The first comparator run **incorrectly extrapolated the 2010 FRASER observation 
 | Pu Shen | **2,010** | **236** | **11.7413%** | 0.46422 percentage points |
 
 These numbers apply only to the existing FRASER series ending in **2010** and retain the deliberately provisional issue-date availability assumption. **They supersede the longer-period values above.** The archival dividend source aligns relatively closely; the earnings yield does not. This suggests prioritising the Pu Shen earnings-definition and reporting-vintage audit before spending more time on Competitive.
+
+## Does a script download all data fresh? (2026-10-11)
+
+**Not yet.** The completed prototype now downloads and hashes **three types of source** into an immutable snapshot: the Federal Reserve H.15 ZIP, the NBER historic commercial paper text, and explicitly requested official GovInfo `Economic Indicators` table XLSs. It deliberately does not imply that the entire six-sleeve package is fresh-downloadable.
+
+From the repository root:
+
+```bash
+python -m freeburg.tools.acquire_fresh \
+  --output-dir local/snapshots/2026-10-11 \
+  --govinfo-issue 2011-10 \
+  --govinfo-issue 2009-12
+```
+
+A live VPS end-to-end test (2026-10-11) produced:
+- **Federal Reserve H.15:** valid ZIP, **4,285,147 bytes**, SHA-256 `bb2e439536b7312483db8dafd4770509e1c34dcef692e14e4797bd16d051f24a`.
+- **NBER CP:** valid non-HTML text, **59,340 bytes**, SHA-256 `cdd996194d1c47f6559dec75343bef32c070d5128f81664322113da7cedd4739`.
+- **GovInfo 2011-10 Pg31:** valid XLS, **39,424 bytes**, SHA-256 `5f2ccf82699db496aabdcc7ae8ab62fc83791cc20def62cd9220f5fc5573e7d1`.
+- **GovInfo 2009-12 Pg31:** returned HTML; correctly classified as unavailable/invalid XLS, not silently included.
+- All results and URLs written to `manifest.json`; the utility refuses to overwrite an existing populated destination. Re-run with a *new* directory to ensure a fresh acquisition.
+
+Not yet downloaded by this orchestrator: S&P index closes; user-obtained FRED API series `DPRIME` / `INTDSRUSM193N` (plus provider-rights check); remaining official CPI/Treasury / Moody's; historical FRASER first-publication PDFs; CRB / Dow DJ20 Heine inputs. GovInfo currently requires **explicit issue selection**, not a complete issue-range harvest. Its XLS observations have unverified availability dates, so they are not automatically injected into strategies.
+
+A fully reproducible release needs separate **source acquisition → validation → normalization → point-in-time timestamps → signal comparison → replay** steps. A successful GET request by itself does not satisfy these gates.
