@@ -34,7 +34,7 @@ def acquire(url: str, out: Path, kind: str, *, timeout=90, opener=None) -> dict:
         if status != 200: raise ValueError(f"Unexpected HTTP status: {status}")
     if len(body)>MAX_BYTES:raise ValueError("Download exceeds 80 MB")
     if kind=="zip":
-        if not body.startswith(b"PK\\x03\\x04".decode("unicode_escape").encode("latin1")):
+        if not body.startswith(bytes.fromhex("504b0304")):
             raise ValueError("Expected ZIP, got an unrelated payload")
     elif kind=="xls":
         if not (body.startswith(bytes.fromhex("d0cf11e0")) or body.startswith(b"PK\x03\x04")):
