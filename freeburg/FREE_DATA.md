@@ -219,3 +219,24 @@ python -m freeburg.tools.govinfo_weekly_spx \
 ```
 
 The extractor is an **independent no-cost proxy source**, not a legal or quantitative certification of the S&P Friday-close historical dataset. This distinction prevents an attractive but false claim of exact market-price reproduction.
+
+## 2010–2013 bounded GovInfo harvest and price-comparability audit
+
+Executed the new `freeburg/tools/govinfo_harvest.py` on the VPS for **37 issue-months (2010-09 through 2013-09)**. **32** issues passed the strict stock-table XLS extraction; **5** were quarantined as invalid/unexpected layouts, including 2013-01 (a year-rollover/label anomaly). The valid issues produced **160 sourced weekly rows, 141 distinct Friday labels** (overlapping months account for duplicates).
+
+Against the private S&P Friday-close benchmark, **138** labelled weeks overlap. Raw median absolute deviation was **62.93 bps**; mean **98.09 bps**, BUT these figures include a serious source outlier and are **not clean-equivalence numbers**.
+
+**Found a concrete published-spreadsheet anomaly:** GovInfo 2013-02 Pg31 row labelled **Mar 2, 2013** contains weekly S&P index **1,837.04**, while adjacent weekly source rows are **1,515.23** and **1,540.38** and the private Friday close is **1,518.20**. This one-row departure is **~2,100 bps** and is almost certainly a typo in the published table, not proof of market movement. Preserve the original source value with a documented **anomaly flag**; do **not** silently repair it or use it as a tradeable observation. This is why a naive governmental price substitute is unsafe.
+
+Harvest example:
+
+```bash
+python -m freeburg.tools.govinfo_harvest \
+  --start 2010-09 --end 2013-09 \
+  --output-dir local/govinfo_2010_2013
+python -m freeburg.tools.govinfo_weekly_spx \
+  --source-dir local/govinfo_2010_2013 \
+  --output local/govinfo_weekly_averages.csv
+```
+
+Both commands operate on original data source files and do not convert weekly government **averages** into S&P **Friday closes** or reconstruct valid time-of-publication.
