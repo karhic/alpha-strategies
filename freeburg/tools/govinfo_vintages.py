@@ -86,7 +86,7 @@ def monthly_from_workbook(xls: Path, info: dict) -> list[dict]:
 
 def run(xls_dir: Path, output: Path, *, use_online_metadata=True, cache_dir:Path|None=None):
     if output.exists():raise FileExistsError(output)
-    files=sorted(xls_dir.glob("ECONI-????-??-Pg31.xls"))
+    files=sorted(xls_dir.rglob("ECONI-????-??-Pg31.xls"))
     if not files:raise ValueError("No GovInfo XLS files")
     extracted=[];errors=[]
     for path in files:
