@@ -79,3 +79,25 @@ python freeburg/tools/free_data.py govinfo-preview --input local/econi-2011-10-p
 ```
 
 Keep extracted GovInfo rows separate from the frozen research inputs until their publication dates and signal implications have been validated.
+
+## Integration test results (2026-10-11, VPS)
+
+- GitHub Actions `Freeburg free-data utilities`: **successful** (two successful workflow runs).
+- VPS local standard-library tests: **4 passed**. The prior claim of “six local tests” was mistaken; the test module contains four.
+- Real GovInfo XLS: October 2011 page 31 **HTTP 200, valid XLS, 41 × 10**; September 2020 page 31 also valid. **Tests for 2000-10, 2005-10, 2009-10 and 2010-05 returned HTML, not XLS**, despite HTTP 200. Therefore *GovInfo access is demonstrably inconsistent across old issues*. The header-signature guard correctly prevents falsely accepting HTML as a spreadsheet. GovInfo's format should not be advertised as continuously available since 1995.
+- Stooq HTTP endpoint for S&P 500 returned a **JavaScript browser verification page**, not CSV. No bypass attempted; manual authorised downloads remain the fallback.
+- **Fed H.15 Prime/Discount alternative**: constructed **9,544 DataEvents / 2,386 weekly decision events** from actual archived Fed H.15 series with a frozen S&P price CSV. This is a syntactic build, **not** verified decision parity.
+- **Critical parity discovery:** In a direct 50-week signal comparison of the Federal Reserve archive with the existing `DPRIME / INTDSRUSM193N` snapshots on their **2,288 overlapping valid weeks**, there were **141 differing risk-on/off decisions (6.16%)**. Historical entry counts calculated with that comparator were **60** for the legacy definition versus **42** for the Fed archive alternative. (The original reported 60 entries is over its published evaluation convention, so these are *not* proof of its exact fingerprint either.) **Do not silently replace the original historical benchmark with the Fed alternative.** Likely causes include differences in the discount-series identity, observation calendars and cutover policy. Evaluate those differences explicitly.
+- The updated event builder optionally uses `--fed-archive-dir <directory>` to run **offline** from real saved H.15 files, with -9999 sentinels removed. Direct live Fed download and full replay remain unverified.
+- **Licensing unchanged:** the test demonstrates technical availability, *not* permission to redistribute Stooq, S&P, or Moody's data.
+
+Tested offline builder example:
+
+```bash
+python -m freeburg.prime_discount.build_fed_public_events \
+  --prices freeburg/prime_discount/data/spx_weekly_2026-08-07.csv \
+  --fed-archive-dir /path/to/research/freeburg/prime_discount \
+  --output local/fed_prime_discount_events.jsonl
+```
+
+The input S&P benchmark file in this command is for **private validation only** until redistribution rights are addressed.
