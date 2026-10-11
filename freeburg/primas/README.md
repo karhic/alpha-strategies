@@ -44,6 +44,9 @@ Period: **2013-10-04 to 2026-09-04**.
 
 The post-2013 figures are not part of Freeburg's published sample.
 
+**[Year-by-year OOS comparison: annual return, excess Sharpe, Calmar and maximum drawdown vs S&P buy-and-hold and weekly-rebalanced 60/40](reports/README.md)** (2014–2025 full years; 2026 YTD). The 60/40 uses S&P total-return approximation plus AGG adjusted closes.
+
+
 ## Data provenance
 
 ### S&P 500
