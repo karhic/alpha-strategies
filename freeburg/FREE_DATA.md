@@ -261,3 +261,27 @@ python -m freeburg.tools.audit_govinfo_prices \
 ```
 
 **Local regression suite:** 10 tests passed after header-layout and New Year fixes.
+
+## Fundamental-data availability barrier, archive metadata and point-in-time status
+
+Added `freeburg/tools/govinfo_vintages.py` to parse archived GovInfo package MODS metadata for each independently downloaded historical issue. **GovInfo `dateIssued` represents the nominal issue month; it cannot be used as the observation's availability date.** The alternative `recordCreationDate` is an archive-catalog timestamp. This latter date provides a conservative, delayed **sensitivity scenario only**, not reliable evidence that the underlying financial numbers were first available then. It may postdate original public release by months: for example the 2010-12 issue is recorded as created **2011-08-29**, and the 2011-10 issue as created **2011-11-08**. These were verified against live MODS metadata.
+
+Live extraction on 32 GovInfo XLS files from 2010–2013:
+- **532** source vintage observations;
+- **59** first-observed unique period/metric observations (**45 dividend, 14 earnings**);
+- **0 parser failures** among these 32 XLS files.
+
+Added `freeburg/tools/govinfo_pit_events.py` to generate fundamentals-only events with `available_at` equal to the MODS catalog date at **23:59 UTC**. It refuses any timestamp before the source observation, and collapses historical rows reprinted together so one archive event cannot flood the strategy with months of newly fabricated historical state. The tested set yielded **36** isolated events with **23** reprinted rows suppressed. No S&P price, CP or interest-rate events were injected or backdated.
+
+```bash
+python -m freeburg.tools.govinfo_vintages \
+  --xls-dir local/govinfo_2010_2013 \
+  --metadata-cache-dir local/govinfo_mods_metadata \
+  --output local/govinfo_first_cataloged_vintages.csv
+
+python -m freeburg.tools.govinfo_pit_events \
+  --vintages local/govinfo_first_cataloged_vintages.csv \
+  --output local/govinfo_fundamental_events.jsonl
+```
+
+**Important limitation:** This resolves *one proven form of lookahead* (assigning later-published figures the nominal issue-month date). It **does not fully solve point-in-time reproducibility** or prove the original first publication times; to claim that, cross-check contemporaneous release timestamps and vintage revisions, align pre-2010 FRASER sources, define business-day signal execution, and replay the strategies with event-time/availability-time invariants. The current source overlay is deliberately research-only, and never automatically replaces the frozen benchmark.
