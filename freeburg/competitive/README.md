@@ -34,3 +34,6 @@ Reconstruction: 1970-07-31 to 2013-09-27, 2,253 weeks, using 10Y Treasury as the
 - Risk-off accounting: 90% of 3-month commercial-paper yield / 52.
 
 The exact Pinnacle long-T-bond series remains a source-identity ambiguity; the 10Y public implementation is frozen rather than optimized against returns.
+
+
+**[Year-by-year OOS comparison: annual return, excess Sharpe, Calmar and maximum drawdown vs S&P buy-and-hold and weekly-rebalanced 60/40](reports/README.md)** (2014–2025 full years; 2026 YTD). The 60/40 uses S&P total-return approximation plus AGG adjusted closes.
