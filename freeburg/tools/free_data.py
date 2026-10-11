@@ -23,8 +23,11 @@ def _float(s: object) -> float | None:
     if s is None:
         return None
     v = str(s).strip().replace(",", "")
-    if not v or v in {".", "-", "N/A", "nan", "None"}:
+    if not v or v in {".", "-", "N/A", "nan", "None", "......", "……"}:
         return None
+    # Published tables prefix provisional figures with p/r and may use a
+    # Unicode ellipsis for missing values. Do not turn missing into zero.
+    v = re.sub(r"^(?:p|r)\s+(?=[+-]?\d)", "", v, flags=re.I)
     try:
         x = float(v)
     except ValueError:
