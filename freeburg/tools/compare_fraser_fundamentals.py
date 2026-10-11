@@ -48,6 +48,10 @@ def analyze(sleeve: str, fraser_dir: Path, sleeve_dir: Path) -> dict:
     a=pd.merge_asof(x.sort_values("date"),f[["assumed_available",source_col,"period_date"]]
                     .sort_values("assumed_available"),left_on="date",
                     right_on="assumed_available",direction="backward")
+    # The scratchpad archive stops in 2010. Exclude periods after the last
+    # underlying source observation: no indefinite forward-fill into 2026.
+    source_end=f.period_date.max()
+    a.loc[a["date"] > source_end,source_col]=float("nan")
     original=x.set_index("date")[col]
     candidate=a.set_index("date")[source_col].reindex(original.index)
     valid=original.notna()&candidate.notna()
