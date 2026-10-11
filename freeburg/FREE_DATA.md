@@ -285,3 +285,17 @@ python -m freeburg.tools.govinfo_pit_events \
 ```
 
 **Important limitation:** This resolves *one proven form of lookahead* (assigning later-published figures the nominal issue-month date). It **does not fully solve point-in-time reproducibility** or prove the original first publication times; to claim that, cross-check contemporaneous release timestamps and vintage revisions, align pre-2010 FRASER sources, define business-day signal execution, and replay the strategies with event-time/availability-time invariants. The current source overlay is deliberately research-only, and never automatically replaces the frozen benchmark.
+
+## Strategy event integration / gap audit (2026-10-11)
+
+Added `freeburg/tools/build_vintage_overlay.py` which removes the frozen benchmark fundamentals from Pu Shen and Competitive event streams and overlays only historical archive-catalog-timestamped fundamental observations. It deliberately **does not backdate the observations**. Source month is kept separately in `source_period_time`; the actual event is inserted at the catalog timestamp, so chronological causal replay cannot expose it to earlier weeks.
+
+The code ran locally on full frozen baseline streams plus the available **32-issue** 2010–2013 GovInfo sample:
+- **Pu Shen:** removed 2,923 frozen weekly earnings events; inserted 10 catalog-dated earnings events; 2,923 existing decision clock events retained; output 8,779 total events.
+- **Competitive:** removed 2,953 frozen weekly dividend events; inserted 26 catalog-dated dividend events; 2,953 weekly decision events retained; output 11,838 total events.
+- **Critical incompleteness revealed:** through September 2013, only **109** of the **2,247** Pu Shen weekly decision clocks, and **109** of the **2,277** Competitive clocks, occur after the *first* catalog-available 2011 vintage. Earlier decision clocks have **no qualifying GovInfo fundamental**. Even the 109 later clocks mostly have insufficient 50- or 24-observation history for the original strategy algorithms, since archival monthly/quarterly observations aren't weekly and sparse event feeds cannot recreate daily/weekly histories without explicitly defined as-of resampling.
+- **13 local regression tests passed**, including replacing baseline fundamentals and withholding availability until the later catalog date.
+
+This is a test of the **causal availability barrier and data coverage, not a successful full historical strategy replay**. The actual causal-trading-engine runtime was not installed on the current VPS environment; full end-to-end ledger validation is outstanding. Do not represent the 2010–2013 GovInfo sample as a 1970–2013 PIT solution.
+
+Next required implementation gates: acquire and timestamp pre-2011 archived FRASER originals; convert first-published source observations to a *weekly as-of state* **only after** release, with provenance to the previous observation; acquire remaining 2013+ monthly GovInfo issue vintages; feed them through the generic causal engine and prove that future-source perturbations cannot change historical decisions.
