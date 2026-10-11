@@ -17,6 +17,19 @@ def align_past(series: pd.Series, dates: pd.DatetimeIndex) -> pd.Series:
     s=s[~s.index.duplicated(keep='last')]
     return s.reindex(s.index.union(dates)).sort_index().ffill().reindex(dates)
 
+def fed_archived_series(directory: Path, filename: str, column: str) -> pd.Series:
+    """Read the official H.15 weekly observations saved by the research archive.
+
+    Exclude the Fed's -9999 missing-value sentinel. Archive files contain
+    Wednesday-ending weekly observations; Friday decisions use last available.
+    """
+    path = directory / filename
+    df = pd.read_csv(path, parse_dates=["week_ending"])
+    s = pd.to_numeric(df[column], errors="coerce")
+    s = pd.Series(s.to_numpy(), index=pd.DatetimeIndex(df["week_ending"]))
+    return s.where(s > -9990).dropna().sort_index()
+
+
 def make_rows(prices, bank_prime, old_discount, primary_credit,
               cutover=date(2003,1,9), end=date(2013,9,27)):
     dates=pd.DatetimeIndex(sorted(d for d in prices if d<=end))
@@ -42,13 +55,23 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--prices',required=True,type=Path)
     p.add_argument('--output',required=True,type=Path)
+    p.add_argument('--fed-archive-dir',type=Path,
+                   help='Use local Fed H.15 raw weekly exports (no network)')
     p.add_argument('--through',type=date.fromisoformat,default=date(2013,9,27))
     a=p.parse_args()
     if a.output.exists():
         p.error('Refusing to replace an existing file')
     prices=load_prices(a.prices)
     names=('RIFSPBLP_N.WW','H0.RIFSRD_F02_N.WW','RIFSRP_F02_N.WW')
-    rates=[_fed_series(name) for name in names]
+    if a.fed_archive_dir:
+        specs=(
+            ('H15_RAW_RIFSPBLP_N_WW.csv','prime_rate'),
+            ('H15_RAW_H0_RIFSRD_F02_N_WW.csv','discount_rate'),
+            ('H15_RAW_RIFSRP_F02_N_WW.csv','primary_credit_rate'),
+        )
+        rates=[fed_archived_series(a.fed_archive_dir,*x) for x in specs]
+    else:
+        rates=[_fed_series(name) for name in names]
     rows=make_rows(prices,*rates,end=a.through)
     if not rows:
         raise RuntimeError('No aligned input weeks; inspect Fed series and local prices')
