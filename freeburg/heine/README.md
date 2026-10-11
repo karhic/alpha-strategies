@@ -31,3 +31,5 @@ No post-2013 headline is reported until the DJ20 continuity problem is resolved 
 - CRB: historical CRB commodity index; exact series/version continuity must remain frozen with source notes.
 
 `strategy.py` implements the actual 3-of-5 rule and deliberately does not encode any proxy substitution.
+
+**Experimental modern post-2013 Heine:** [documented LQD/DBC proxy backtest](MODERN_PROXY.md), not an exact Heine historical reproduction. The four-sleeve portfolio remains the public headline.
