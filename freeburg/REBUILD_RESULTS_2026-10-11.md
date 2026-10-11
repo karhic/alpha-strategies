@@ -45,3 +45,26 @@ The **FRASER first-published CSVs are still provided from the user's existing re
 5. Exact Heine DJ20/CRB historical sources: unresolved. Label separate proxy prominently.
 
 **The completed original benchmark, a free-download research profile, and a licensed-source substitute must remain separate modes.**
+
+## Additional end-to-end runtime test
+
+Built two full event streams with the *reconstructed* fundamentals and **explicitly labelled frozen macro-rate/CPI fallback** (so this is NOT a full fresh-source run).
+
+- Pu Shen: **2,923 weekly decisions**, **11,692 total events**, causal-trading-engine replay completed, ledger created.
+- Competitive: **2,953 weekly decisions**, **14,765 total events**, causal-trading-engine replay completed, ledger created.
+
+The new `freeburg/tools/replay_rebuilt_fundamentals.py` is the tested adapter. It **does not change the strategy methodology**. Missing historical macro/rate input still comes from the frozen baseline, visibly labelled `FROZEN_BASELINE_UNREBUILT`. It should not be used to assert six-sleeve full-source independence. These replays are structural execution proofs, not calculations of new standalone strategy CAGR/Sharpe.
+
+```bash
+python -m freeburg.tools.replay_rebuilt_fundamentals \
+  --sleeve pushen \
+  --fundamentals local/rebuilt_fundamentals.csv \
+  --frozen freeburg/pushen/data/pit_weekly_inputs.csv \
+  --output local/pushen_rebuilt_events.jsonl
+
+python freeburg/pushen/run_replay.py \
+  --events local/pushen_rebuilt_events.jsonl \
+  --ledger local/pushen_rebuilt_ledger.jsonl
+```
+
+Repeat with `--sleeve competitive`, the Competitive frozen CSV, and the Competitive replay script.
