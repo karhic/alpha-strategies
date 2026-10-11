@@ -134,3 +134,15 @@ python -m freeburg.prime_discount.compare_sources \
 Six local unit tests passed (normalization, GovInfo parsing, FRED JSON and parity checks). An updated GitHub CI workflow covers all six.
 
 **Remaining decision:** make the original Prime/Discount benchmark optionally reproducible from **user-obtained FRED JSON (free access subject to terms)**, and retain official H.15 as an explicitly different source profile. This is much stronger than silently presenting H.15 as equivalent.
+
+## GovInfo cross-year and end-to-end parsing validation (2026-10-11)
+
+The public XLS for **page 31** was live downloaded and successfully parsed for these 10 additional representative issues: **2010-12, 2011-01, 2011-03, 2012-01, 2013-10, 2015-10, 2018-10, 2020-09, 2022-10, 2024-10**. Each has the title *Common Stock Prices and Yields*. The observed earlier boundary is specific: tested issues **2009-12, 2010-02, 2010-04 to 2010-08** returned a generic HTML document rather than the XLS; **2010-09 onward** succeeded for those samples. This is not exhaustive monthly coverage.
+
+The real **2011-10** page-31 workbook passed the importer end-to-end: **13 monthly dividend rows**, and quarterly earnings observations of **6.15% (2010-12), 6.13% (2011-03), 6.35% (2011-06)**. Example: **2011-03 dividend yield 1.90%, earnings yield 6.13%**. The importer now handles abbreviated month names with periods, ellipsis missing-value markers, and provisional `p`/`r` prefixes.
+
+GovInfo's official MODS metadata lists `dateIssued=2011-10-01` but `recordCreationDate=2011-11-08` for October 2011. **Neither field alone proves the date of first public availability.** The 2011-11-08 field used in the end-to-end importer demonstration is *only a provisional example*, not verified publication timing; the importer correctly labels all its observations unverified. Do not use the current demonstration CSV as PIT data.
+
+**Important 2024 source issue:** dividends were represented as ellipses in a sampled 2024 table, despite earnings observations. The series can be partially missing even when a workbook loads successfully. A full historical harvest must record missingness and provider-specific changes, not fill from future issues.
+
+All **six local Python tests passed**, and the updated GitHub Actions workflows have also passed.
