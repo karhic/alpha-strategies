@@ -17,7 +17,7 @@ MONTHS = {s.lower():i for i,s in enumerate(
     ("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),1)}
 
 
-def parse_weekly_table(rows: list[list[str]], issue: str, source: str) -> list[dict]:
+def parse_weekly_table(rows: list[list[str]], issue: str, source: str, anomalies: list[dict] | None = None) -> list[dict]:
     if not rows or "Common Stock Prices and Yields" not in str(rows[0][0]):
         raise ValueError("Wrong economic table")
     if len(rows)<4 or not any("Standard" in str(r[6]) for r in rows[:5] if len(r)>6):
@@ -34,8 +34,8 @@ def parse_weekly_table(rows: list[list[str]], issue: str, source: str) -> list[d
         if not in_weekly:continue
         if any(x in label for x in ("Source:", "Sources:", "Effective January", "Note:", "Monthly data")):
             break
-        m=re.fullmatch(r"((?:19|20)\d{2}):\s*([A-Za-z]{3,9})\s+(\d{1,2})\.?\s*",label)
-        named=re.fullmatch(r"([A-Za-z]{3,9})\s+(\d{1,2})\.?\s*",label)
+        m=re.fullmatch(r"((?:19|20)\d{2}):\s*([A-Za-z]{3,9})\s+(\d{1,2})(?:\s+[a-z])?\.?\s*",label)
+        named=re.fullmatch(r"([A-Za-z]{3,9})\s+(\d{1,2})(?:\s+[a-z])?\.?\s*",label)
         bare=re.fullmatch(r"(\d{1,2})\.?\s*",label)
         if m:
             yr=int(m.group(1));mo=MONTHS.get(m.group(2)[:3].lower());day=int(m.group(3))
@@ -63,6 +63,11 @@ def parse_weekly_table(rows: list[list[str]], issue: str, source: str) -> list[d
                 if possible.weekday()==5: period=possible;yr=next_year;mo=next_month
             except ValueError: pass
         if period.weekday()!=5: # Source normally labels Saturday-ending weeks.
+            if anomalies is not None:
+                anomalies.append({"issue":issue,"source_row":line_no,
+                                  "raw_label":label,
+                                  "reason":f"unexpected weekday for {period}"})
+                continue
             raise ValueError(f"Unexpected weekly label {period} in {issue}")
         price=_float(row[6]); div=_float(row[8])
         if price is None or price<10:
