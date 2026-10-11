@@ -183,7 +183,7 @@ def parse_govinfo_monthly_rows(rows: list[list[str]], *, period_col: int,
         if max(period_col, dividend_col, earnings_col) >= len(row):
             continue
         label = str(row[period_col]).strip()
-        full = re.fullmatch(r"((?:19|20)\d{2}):\s*([A-Za-z]{3,9})", label)
+        full = re.fullmatch(r"((?:19|20)\d{2}):\s*([A-Za-z]{3,9})\.?", label)
         short = re.fullmatch(r"([A-Za-z]{3,9})", label)
         if full:
             current_year = int(full.group(1))
