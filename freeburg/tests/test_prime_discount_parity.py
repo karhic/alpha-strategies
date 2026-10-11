@@ -49,7 +49,7 @@ class HistoricalParityTests(unittest.TestCase):
             self.assertEqual(same['source_equivalence'],'EXACT_WITHIN_TOLERANCE')
             self.assertEqual(same['different_decisions'],0)
             # Inject known input-level deviation: exact equivalence must now fail.
-            rows[1]['payload']=8
+            rows[3*60+1]['payload']=8
             events.write_text(''.join(json.dumps(row)+'\n' for row in rows))
             changed=comparison(prices,rates,events,'2020-01-01','2021-12-31')
             self.assertEqual(changed['source_equivalence'],'ALTERNATIVE_DIFFERENT')
