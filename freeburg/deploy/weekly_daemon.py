@@ -40,6 +40,19 @@ def run(root:Path, *, check_broker:bool=True)->dict:
             result["shadow_signal_ready"]=False
             result["shadow_error"]=type(ex).__name__+": "+str(ex)[:300]
 
+    if result.get("shadow_signal_ready"):
+        try:
+            from freeburg.deploy.canonical_shadow import produce as canonical
+            result["canonical"]=canonical(folder,folder/"canonical")
+            result["canonical_shadow_agrees"]=(
+                result["canonical"]["states"]==result["shadow"]["states"]
+                and result["canonical"]["spy_target_weight"]==result["shadow"]["spy_target_weight"]
+            )
+            if not result["canonical_shadow_agrees"]:
+                raise ValueError("Actual four strategy classes DISAGREE with vectorized reference")
+        except Exception as ex:
+            result["canonical_shadow_agrees"]=False
+            result["canonical_error"]=type(ex).__name__+": "+str(ex)[:350]
     result["all_data_stages_ok"]=all(s["ok"] for s in result["stages"].values())
     (folder/"run_status.json").write_text(json.dumps(result,indent=2)+"\n")
     latest=root/"latest.json"
