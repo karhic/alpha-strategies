@@ -99,4 +99,6 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Individual annual reports:** [Primas](freeburg/primas/reports/README.md) · [Triple-40](freeburg/triple40/reports/README.md) · [Pu Shen](freeburg/pushen/reports/README.md) · [Competitive Returns](freeburg/competitive/reports/README.md).
 
+**Execution robustness:** A [one-week-late signal sensitivity test](freeburg/FOUR_EXECUTION_STRESS.md) reduces the 2014–2026 model CAGR from 9.20% to 8.22% and increases maximum drawdown from −19.20% to −22.10% over the identical 657-week comparison. This does not resolve original publication-vintage or realistic execution-time verification.
+
 **Reproduction tools and source notes:** [Four-sleeve reproducibility/PIT audit](freeburg/FOUR_SLEEVE_AUDIT.md) · [Freeburg data quickstart](freeburg/QUICKSTART_DATA.md) · [Release status](freeburg/RELEASE_STATUS.md). The annual portfolio statistics above use the same local weekly OOS research sample as the four individual sleeve reports.
