@@ -14,6 +14,8 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Confirmed lookahead warning (12 October 2026):** We reproduced **all 2,632 research-model trading decisions** through the released causal strategy implementations using matching original research inputs. However, we also identified a **real lookahead mechanism in Triple-40**: the original model treated the full-month Moody’s Baa yield as available at the *start of that same month*. Holding all other assumptions fixed, a conservative **month-end Baa timing** changes the four-sleeve CAGR from **9.21% to 8.72%**; the max drawdown in this diagnostic remains −19.20%. Even 8.72% is **not fully PIT verified**, because other fundamental vintages and execution assumptions remain unaudited. [Exact-source replay and timing audit](freeburg/TRIPLE40_MONTHLY_BAA_PIT_FINDING.md).
 
+**Fundamentals availability sensitivity:** We also varied quarterly earnings/dividend availability between **30 and 180 days**, holding the more conservative month-end Baa timing constant. The modeled composite CAGR ranged from **8.47% to 8.77%**, against **8.72%** at the original 90-day lag. **None of these fixed-lag variants establish point-in-time vintage accuracy:** our historical workbook contains values sometimes captured much later. We should use actually dated original releases—not assume either 90 days or a longer delay unnecessarily. [Fundamental availability audit](freeburg/FUNDAMENTAL_AVAILABILITY_ENVELOPE.md).
+
 ### Full-period summary
 
 | Metric | Freeburg 4 | S&P 500 | 60/40 |

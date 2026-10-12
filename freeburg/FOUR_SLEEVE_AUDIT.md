@@ -97,3 +97,5 @@ input-data reconstruction. Local market source copies are not committed.
 **New material finding:** [Post-2013 causal-strategy/research-model action mismatches](OOS_PARITY_FINDING.md) (256/2,632 sleeve-weeks; composite diagnostic 8.30% versus published 9.21% CAGR). This is now the primary release blocker.
 
 **Confirmed high-priority PIT issue:** [Triple-40 monthly Baa source timing](TRIPLE40_MONTHLY_BAA_PIT_FINDING.md). The original OOS Baa month-start as-of convention uses future within-month information. Four-sleeve CAGR drops from 9.21% to 8.72% with the month-end convention, keeping everything else fixed. That reduction does *not* establish PIT certification for the other inputs.
+
+**New earnings/dividend availability envelope:** [30–180-day versus archived-capture sensitivity](FUNDAMENTAL_AVAILABILITY_ENVELOPE.md). A 90-day lag may be overly conservative for an early published preliminary number but too optimistic for the exact hindsight-revised value. Verify earliest original releases rather than using final capture timestamps as publication dates.
