@@ -1,31 +1,49 @@
-# Freeburg — systematic equity-risk regime research
+# Freeburg — historical market timing, rebuilt and running live
 
-**Can simple, interpretable market and macroeconomic signals participate in equity upside while avoiding the worst market drawdowns?** Freeburg is an open research implementation of a family of equity/cash market-timing rules designed to investigate that question.
+**A 2013 trading talk. Six decades-old systematic strategies. One independently runnable, auditable signal engine.**
 
-The motivation is straightforward: a market-timing system that successfully identifies periods of financial stress might sacrifice some upside in exchange for materially lower losses in bad markets. Historically, Freeburg-style timing approaches have also had an important weakness: **missing substantial portions of equity bull runs**. This project reconstructs the rules, studies that trade-off, and makes their decisions inspectable and runnable as a forward signal monitor.
+This project started with Nelson Freeburg's 2013 MTA London presentation, **[Systematic Market Analysis: Expanding Opportunities and Managing Risk](https://cmtassociation.org/video/systematic-market-analysis-expanding-opportunities-and-managing-risk-2/)** ([CMT presenter/video archive](https://cmtassociation.org/presenter/nelson-freeburg/)). Freeburg revisited mechanical market-timing ideas originating with earlier researchers, many published years or decades before his talk, and tested them on US-market history reaching back to **1970**. His philosophy: **avoid devastating drawdowns so compounding has a better chance to produce strong long-run returns**. Avoiding a 50% loss, which takes a 100% gain merely to recover, can matter more than capturing every rally.
 
-The current headline experiment is an **equal-weight composite of four rules**, evaluated weekly over **3 January 2014–7 August 2026 (658 decision weeks)**. Four are used rather than the original six because the data and historical reconstruction for the other two are not sufficiently established for inclusion in the same comparison. The figures below use the *conservative month-end Moody’s Baa timing scenario* and an assumed 90-day release lag for quarterly S&P earnings/dividend data.
+### Freeburg's original reported results, approximately 1970–September 2013
 
-> **Research status, not a performance claim.** These are simulated, retrospective research returns—not audited trades, an independently point-in-time-certified historical dataset, or realized investor returns. The historical Friday-close return convention is not the same as a next-session executable fill. The standalone Docker app produces current signals and **does not place orders**.
+| Presented strategy | Reported compound annual return | Reported maximum drawdown |
+|---|---:|---:|
+| Primas | 12.1% | −16.4% |
+| Triple-40 | 12.0% | −18.7% |
+| Pu Shen earnings yield | 10.0% | −15.1% |
+| Heine bond model | 11.5% | −4.8% |
+| Competitive Returns | 12.9% | −35.9% |
+| **Equal-weight six-model composite** | **11.3%** | **−11.7%** |
 
-## What the evidence suggests
+These are **Freeburg's own figures as transcribed from the presentation**, not returns earned by this code or verified live trading. The Prime/Discount slide showed an equity curve but the available reference did not establish a precise standalone CAGR and drawdown. Our historical reconstruction of Heine requires a proprietary bond-index history and is **not** claimed to be exact.
 
-Freeburg's most interesting feature in the 2014–2026 evaluation is **drawdown reduction**, not return maximization. The modeled four-sleeve composite had an **8.72% CAGR and −19.20% maximum drawdown**, versus **13.99% and −31.68%** for S&P 500 buy-and-hold. It also returned less than the **9.40% CAGR** of the 60/40 comparator. Lower CAGR is not especially surprising in an unusually strong US-equity bull market: a system that sometimes exits to cash will forgo part of a persistent rally.
+### What this repository adds
 
-The contrast is sharp in stress periods. In **2018** the composite's worst within-year decline was approximately **−2.2%** versus **−17.1%** for the S&P; in **2022**, approximately **−4.2%** versus **−22.5%**. In **2020**, however, Freeburg still suffered a **−19.2%** modeled drawdown amid the COVID crash. This was better than the S&P's **−31.7%**, but less protection than one might hope from a stress-aware strategy. **One possible explanation** is that a fast, exogenous pandemic shock gave financial and economic trend signals little warning; the experiment does not establish that as the cause.
+- **One strategy implementation for backtests and forward signals.** The four production signal classes execute through the same `causaltrader` engine whether processing a historical event stream or a newly captured snapshot. There is no separate, independently rewritten live strategy.
+- **Real historical cross-checks:** the four-strategy **2014–August 2026** study replays **2,632 strategy-week decisions**, all matching an independent reference calculation; a ledger-to-portfolio-accounting bridge reproduces the stated simulated returns to numerical precision.
+- **Causality guards and visible provenance:** timestamp-aware event availability, append-only decision/audit logs, input SHA-256 hashes, missing/stale-data rejection, and a corrected month-end Baa observation convention. An assumed **90-day** lag protects quarterly earnings/dividend inputs from obvious premature use. **Those protections do not prove that every archived historical value was the unrevised figure available at the assumed date**, so the historical study is not described as fully PIT certified.
+- **A live-running, portable research monitor:** build and run with **one Docker Compose command**. The app independently acquires its *current* S&P, Federal Reserve/FRED, earnings and dividend feed data from publicly reachable providers; it computes, independently checks and records weekly **0/25/50/75/100% equity target weights**. **No brokerage or Twitter credentials required** for the default, non-trading container.
 
-The cost shows up in strong advancing markets, including **2017**, **2019** and **2023**, when the model captured far less of the S&P's gain. Taken together, the result is **suggestive evidence that these indicators contain information about financial-market stress or its absence**, not proof of a profitable crisis-prediction system. A risk-on/risk-off signal may be useful as an input to a broader portfolio even when its standalone CAGR trails buy-and-hold.
+```bash
+docker compose up -d --build
+```
 
-## At a glance — four-sleeve composite
+That command works from a checkout of this repository. The setup has been tested in a clean container, with persistent signals and source captures. Once the repository is publicly available, new users can obtain it with `git clone https://github.com/karhic/alpha-strategies.git`. [Docker quickstart and status commands](#run-the-current-signal-monitor-with-docker).
 
-| Full evaluation period | Freeburg 4 | S&P 500 | 60/40¹ |
+### What happened after Freeburg's talk? Our four-sleeve 2014–2026 study
+
+The headline **four-sleeve** composite excludes Heine and Prime/Discount, whose exact historical inputs are not sufficiently resolved. With quarter-end-plus-90-day fundamentals and conservative month-end Baa timing, our **retrospective** results are:
+
+| 2014–7 August 2026 | Freeburg 4 | S&P 500 | 60/40¹ |
 |---|---:|---:|---:|
 | CAGR | **8.72%** | 13.99% | 9.40% |
 | Maximum drawdown | **−19.20%** | −31.68% | −21.18% |
-| Terminal wealth, starting at 1× | **2.88×** | 5.24× | 3.12× |
+| Terminal wealth, $1 → | **$2.88** | $5.24 | $3.12 |
 | Weekly excess Sharpe² | **0.80** | 0.77 | 0.74 |
 
-¹ The benchmark is 60% the same S&P return model plus 40% AGG adjusted-close bond-ETF returns, with weekly rebalancing. ² Weekly excess returns versus contemporaneous nonnegative three-month T-bill carry, annualized with √52. All return models exclude transaction costs and taxes.
+**Interpretation:** Freeburg mostly did what we hoped for drawdown control—particularly in **2018** and **2022**—but participated less in the powerful equity bull market, so CAGR lagged both buy-and-hold and 60/40. The **2020 COVID crash** exposed the limitation: Freeburg still drew down **19.2%** (S&P: **31.7%**). Perhaps a sudden exogenous shock is harder for slow-moving financial stress indicators to anticipate; that remains a hypothesis. Overall the rules look like **suggestive market-stress/regime indicators**, not a magic way to avoid every crash.
+
+¹ 60% S&P / 40% AGG bond-ETF return proxy, weekly rebalanced. ² Weekly excess returns versus T-bill carry, annualized by √52. **All figures are simulated research results, not live audited P&L.** The historical model assumes completed-Friday-close returns and uses some retrospectively archived economic values; it is not fully independently PIT-certified or net of trading costs. [Audit details](freeburg/REPRODUCIBILITY_AUDIT_2026-10-12.md).
 
 ## How the strategy works
 
@@ -40,7 +58,7 @@ Four simple, independently evaluated sleeves each vote **risk-on (100% equities)
 
 The full decisions are in small Python strategy classes under [`freeburg/`](freeburg/). The live monitor runs the *same causal-strategy classes* and checks their output independently. This is a long/cash model, not a continuous volatility target, options hedge, or guarantee against sudden crashes.
 
-## Historical performance: full annual comparison
+## Annual breakdown and reproducibility details
 
 **Evaluation:** 2014–2025 are full decision years; **2026 is year-to-date through 7 August**, not a complete year. Each table compares the conservative four-sleeve composite with S&P buy-and-hold and the weekly-rebalanced 60/40 comparator. Derived machine-readable annual metrics: [`freeburg4_month_end_annual_comparison_2014_2026.csv`](freeburg/reports/freeburg4_month_end_annual_comparison_2014_2026.csv).
 
