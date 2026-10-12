@@ -2,6 +2,8 @@
 
 Systematic market-timing research and historical strategy replications. The [Freeburg project](freeburg/README.md) includes six documented timing sleeves; this report covers a **four-sleeve equal-weight composite**, excluding Prime/Discount and Heine. Five original strategy decision replays are operational; complete independent point-in-time sourcing and the exact Heine bond history remain unresolved.
 
+**Data acquisition update:** [Historical S&P quarterly re-download](freeburg/SP500_QUARTERLY_ACQUISITION.md) is working for **138 of 151 quarters with exact matching archived values**, but four newer Wayback workbooks were inaccessible in the live test. The complete 2014–2026 reproduction still requires recovering those newest captures.
+
 **Reproduce the four-sleeve research results:** [Standalone source-to-performance instructions](freeburg/REPRODUCE_FOUR.md). The published results can now be recalculated from explicitly provided source CSVs **without the separate private scratchpad Python code**. Exact output still requires the original archived S&P quarterly values (not redistributed); the README is not a claim of clean-room PIT or fully self-service source acquisition.
 
 ## Equal-weight four-sleeve Freeburg composite — out-of-sample performance

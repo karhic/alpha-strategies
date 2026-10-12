@@ -11,6 +11,8 @@ not a full independent point-in-time or execution audit. The underlying
 historical S&P quarterly table was originally assembled from later captured
 vendor workbooks, and the precise quarterly values may include later revisions.
 
+**New acquisition path:** [Re-acquire S&P earnings/dividends from the 21 documented Wayback snapshots](SP500_QUARTERLY_ACQUISITION.md). In the first live validation, 17 snapshots yielded 138/151 quarterly records, all 138 numerically identical to the original research archive. The four latest snapshots remain inaccessible in this run, so **a full clean-machine download is not yet demonstrated**.
+
 ## Reproduction with the original research inputs
 
 Prerequisites: Python 3.12+, `pandas`, `numpy`, `requests`. No private
