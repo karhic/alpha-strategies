@@ -10,6 +10,8 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Important validation update (12 October 2026):** This table is the original *research-model* backtest, **not yet verified as the output of the released causal strategy engine**. A fresh 658-week cross-implementation check found **256 mismatched sleeve decisions out of 2,632**. The same cash/equity return assumptions applied to the released engine’s decisions imply approximately **8.30% CAGR**, versus **9.21%** below. This discrepancy is under investigation; do not consider the higher figure independently reproduced. [Detailed parity audit](freeburg/OOS_PARITY_FINDING.md).
 
+**Reconciliation progress (12 October 2026):** Re-running the *actual released causal engine* with the original research model’s quarter-end-plus-90-day earnings/dividend assumptions yields **658/658 matching Pu Shen actions and 658/658 matching Competitive Returns actions**. Primas already matched 658/658. **Triple-40 remains divergent on 109/658 dates under the released source, mostly attributable to different Moody’s Baa continuation conventions.** These are internal model-input reconciliations, **not independently certified historical release vintages**. [Replay evidence](freeburg/OOS_QUARTERLY_REPLAY_PARITY.md).
+
 ### Full-period summary
 
 | Metric | Freeburg 4 | S&P 500 | 60/40 |

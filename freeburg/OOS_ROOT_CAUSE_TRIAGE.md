@@ -46,3 +46,5 @@ decisions as necessarily price noise or harmless.
 The full weekly event histories and intermediate diagnostics were run on the
 authorized VPS. The source data's original availability and redistribution
 rights remain unverified.
+
+**Actual engine follow-up:** [Pu Shen and Competitive 90-day quarterly overlay replays](OOS_QUARTERLY_REPLAY_PARITY.md) both achieved 658/658 action parity with the original research model. Their earlier 111 and 36 disagreements are now removed in separate, source-labelled OOS replays. Original frozen baseline events are preserved.
