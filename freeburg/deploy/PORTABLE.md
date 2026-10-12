@@ -7,6 +7,7 @@ git clone https://github.com/karhic/alpha-strategies.git
 cd alpha-strategies
 docker compose up -d --build
 docker compose logs -f freeburg
+docker compose run --rm freeburg freeburg.deploy.status
 ```
 
 The container captures Fed, FRED, Yahoo and AlphaQuery source snapshots, computes all four research signals using original causaltrader classes and checks an independent implementation. It runs once on startup and schedules capture at 23:30 UTC weekdays. State persists in the Compose-managed `freeburg-state` volume across restarts; it requires no access to the host filesystem, IBKR Gateway, privileged Docker socket or X API keys. No paper/live orders or public posts are sent.
