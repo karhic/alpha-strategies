@@ -75,3 +75,7 @@ cleared for redistribution.
 ## Source-level investigation
 
 The follow-up [OOS root-cause triage](OOS_ROOT_CAUSE_TRIAGE.md) identifies a direct original-90-day-EPS-source explanation for **all 111 Pu Shen** divergences; a **monthly-versus-weekly Moody Baa source** accounts for most Triple-40 divergences (109 down to 20); and the 90-day quarterly dividend lineage accounts for most Competitive divergences (36 down to 8 when other frozen macro series are held fixed). These are **diagnostics, not PIT certification**.
+
+## Third strategy narrowed
+
+An actual [Triple-40 archived Baa-flag diagnostic replay](TRIPLE40_BAA_RECONCILIATION.md) confirmed **638/658 OOS decisions** matching, versus the original released-source replay’s 549/658. The remaining **20 weeks** all hinge on the Baa predicate; do not infer the old research flag from desired outcomes. Original strategy code and headline results remain unchanged.
