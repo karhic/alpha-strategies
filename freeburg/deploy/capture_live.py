@@ -17,8 +17,8 @@ import requests
 
 H15="https://www.federalreserve.gov/datadownload/Output.aspx?filetype=zip&rel=h15"
 FRED={
-    "BAA":"https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAA",
-    "CPIAUCSL":"https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL",
+    "BAA":"https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAA&cosd=2000-01-01",
+    "CPIAUCSL":"https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL&cosd=2000-01-01",
 }
 SPX="https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC"
 WEEKLY={
