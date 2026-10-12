@@ -81,6 +81,41 @@ def verify(frame:pd.DataFrame,expected:pd.DataFrame,ledgers:Path):
     return {'parity':'PASS','weeks':len(expected),'decisions':len(expected)*len(SLEEVES),
             'status':'MODEL_INPUT_PARITY_ONLY_NOT_HISTORICAL_PIT','sleeves':results}
 
+def verify_ledger_accounting(ledgers:Path,returns:pd.DataFrame,frame:pd.DataFrame,*, tolerance=1e-12):
+    """Independent account bridge from emitted causal-engine decisions to research P&L.
+
+    This asserts historical Friday-close research parity ONLY. Executable
+    post-close entries require independent next-session prices, not supplied.
+    """
+    cash_factors={"Primas":1.0,"Triple40":.9,"PuShen":1.0,"Competitive":.9}
+    modelled={}
+    delayed={}
+    for name in SLEEVES:
+        actions={}
+        for line in (ledgers/(name.lower()+'.jsonl')).read_text().splitlines():
+            r=json.loads(line)
+            if r.get('kind')!='strategy_action':continue
+            date=pd.Timestamp(r['timestamp']).tz_localize(None).normalize()
+            if date in actions:raise AssertionError('Duplicate ledger decision')
+            v=float(r['payload']['weight'])
+            if v not in (0.,1.):raise AssertionError('Nonbinary causal ledger weight')
+            actions[date]=v
+        sig=pd.Series(actions).reindex(returns.index)
+        if sig.isna().any():raise AssertionError('Missing ledger action')
+        cash=frame.cp.reindex(returns.index).clip(lower=0)*cash_factors[name]/5200.
+        out=returns.stock*sig+cash*(1-sig)
+        maxerr=float((out-returns[name]).abs().max())
+        if maxerr>tolerance:raise AssertionError(f'Ledger return does not match published research return: {name}: {maxerr}')
+        modelled[name]=out
+        delayed[name]=returns.stock*sig.shift(1)+cash*(1-sig.shift(1))
+    original=pd.DataFrame(modelled).mean(axis=1)
+    lag=pd.DataFrame(delayed).mean(axis=1).iloc[1:]
+    from freeburg.tools.reproduce_four_from_sources import _metrics
+    return {'ledger_research_accounting':'PASS','max_abs_composite_error':float((original-returns[list(SLEEVES)].mean(axis=1)).abs().max()),
+            'research_friday_close_metrics':_metrics(original),
+            'one_full_week_signal_delay_stress':_metrics(lag),
+            'warning':'Neither series is certified PIT, fillable next-session execution, or net of costs.'}
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     for v in ('weekly-prices','macro','quarterly','baa-monthly','agg','output-dir'):
@@ -94,6 +129,7 @@ def main():
     frame=frame_inputs(a.weekly_prices,a.macro,a.quarterly,a.baa_monthly,
                        lag_days=a.lag_days,baa_availability=a.baa_availability)
     report=verify(frame,expected,a.output_dir/'ledgers')
+    report["accounting"]=verify_ledger_accounting(a.output_dir/'ledgers',ret,frame)
     report['source_inputs_sha256']={n:hashlib.sha256(getattr(a,n).read_bytes()).hexdigest()
                  for n in ('weekly_prices','macro','quarterly','baa_monthly','agg')}
     (a.output_dir/'parity_report.json').write_text(json.dumps(report,indent=2)+'\n')
