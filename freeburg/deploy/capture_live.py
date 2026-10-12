@@ -127,8 +127,8 @@ def capture(dest:Path,now:datetime,*,h15_local:Path|None=None,spx_local:Path|Non
     # presently known observations with the actual acquisition timestamp.
     # A completed Friday price may only be used after the US market close,
     # conservatively Saturday UTC at the earliest.
-    completed_friday=(pd.Timestamp(now.date())-pd.offsets.Week(weekday=4))
-    if now.weekday()==4 and now.hour<22:completed_friday-=pd.Timedelta(days=7)
+    completed_friday=(pd.Timestamp(now.date()) if now.weekday()==4 and now.hour>=22
+                     else pd.Timestamp(now.date())-pd.offsets.Week(weekday=4))
     reference=completed_friday.date()
     asof=pd.Timestamp(reference)
     checks={
