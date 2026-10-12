@@ -1,5 +1,26 @@
 # alpha-strategies
 
+
+## Run Freeburg anywhere (Docker)
+
+The default container is a **standalone four-strategy research signal
+monitor**, no IBKR or X account needed:
+
+```sh
+docker compose up -d --build
+docker compose logs -f freeburg
+docker compose run --rm freeburg freeburg.deploy.status
+```
+
+The container downloads currently available market, macro, EPS and dividend
+data, runs four original strategy classes, independently checks the signals,
+and preserves source hashes and decision history in a Docker volume.
+It refreshes after US market close on weekdays and retries failed feed
+acquisitions. **The public/default container sends no orders or social posts.**
+See [portable setup and limitations](freeburg/deploy/PORTABLE.md). Historical
+lookbacks are retrospective and not fully PIT certified.
+
+
 Systematic market-timing research and historical strategy replications. The [Freeburg project](freeburg/README.md) includes six documented timing sleeves; this report covers a **four-sleeve equal-weight composite**, excluding Prime/Discount and Heine. Five original strategy decision replays are operational; complete independent point-in-time sourcing and the exact Heine bond history remain unresolved.
 
 **Data acquisition update:** [Historical S&P quarterly re-download](freeburg/SP500_QUARTERLY_ACQUISITION.md) is working for **138 of 151 quarters with exact matching archived values**, but four newer Wayback workbooks were inaccessible in the live test. The complete 2014–2026 reproduction still requires recovering those newest captures.
