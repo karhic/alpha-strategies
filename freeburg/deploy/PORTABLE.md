@@ -3,7 +3,7 @@
 Default installation requires Docker Compose and an Internet connection, but **no IBKR or X account**.
 
 ```sh
-git clone https://github.com/karhic/alpha-strategies.git
+git clone --branch agent/freeburg-free-data-20261011 --single-branch https://github.com/karhic/alpha-strategies.git
 cd alpha-strategies
 docker compose up -d --build
 docker compose logs -f freeburg
