@@ -79,3 +79,7 @@ The follow-up [OOS root-cause triage](OOS_ROOT_CAUSE_TRIAGE.md) identifies a dir
 ## Third strategy narrowed
 
 An actual [Triple-40 archived Baa-flag diagnostic replay](TRIPLE40_BAA_RECONCILIATION.md) confirmed **638/658 OOS decisions** matching, versus the original released-source replay’s 549/658. The remaining **20 weeks** all hinge on the Baa predicate; do not infer the old research flag from desired outcomes. Original strategy code and headline results remain unchanged.
+
+## Final original-research input reconciliation: 2,632/2,632 (but *not PIT*)
+
+We recovered FRED monthly Moody’s Baa levels and overlaid them on the released Triple-40 event stream. The engine now produces **658/658 matching OOS Triple-40 actions** under the original model’s **month-start observation-date treatment**, completing internal parity across all four sleeves. **Critical:** this stamps full-month values before the month ends and introduces **lookahead bias**. A month-end availability sensitivity produces **8.72% four-sleeve CAGR**, not the original **9.21%**. [Full finding and caveats](TRIPLE40_MONTHLY_BAA_PIT_FINDING.md).

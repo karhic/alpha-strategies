@@ -12,6 +12,8 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Reconciliation progress (12 October 2026):** Re-running the *actual released causal engine* with the original research model’s quarter-end-plus-90-day earnings/dividend assumptions yields **658/658 matching Pu Shen actions and 658/658 matching Competitive Returns actions**. Primas already matched 658/658. **Triple-40 remains divergent on 109/658 dates under the released source; an isolated monthly Baa-flag replay reduces these to 20/658, without changing the production strategy.** These are internal model-input reconciliations, **not independently certified historical release vintages**. [Replay evidence](freeburg/OOS_QUARTERLY_REPLAY_PARITY.md).
 
+**Confirmed lookahead warning (12 October 2026):** We reproduced **all 2,632 research-model trading decisions** through the released causal strategy implementations using matching original research inputs. However, we also identified a **real lookahead mechanism in Triple-40**: the original model treated the full-month Moody’s Baa yield as available at the *start of that same month*. Holding all other assumptions fixed, a conservative **month-end Baa timing** changes the four-sleeve CAGR from **9.21% to 8.72%**; the max drawdown in this diagnostic remains −19.20%. Even 8.72% is **not fully PIT verified**, because other fundamental vintages and execution assumptions remain unaudited. [Exact-source replay and timing audit](freeburg/TRIPLE40_MONTHLY_BAA_PIT_FINDING.md).
+
 ### Full-period summary
 
 | Metric | Freeburg 4 | S&P 500 | 60/40 |
