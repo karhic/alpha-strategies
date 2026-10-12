@@ -50,6 +50,39 @@ supplied as `<14_digit_timestamp>.xlsx` in a local
 the tool does not fabricate values, substitute revised live-workbook data or
 pretend incomplete data match the research original.
 
+## Source-quality standard for public claims
+
+**Source of record:** an original S&P Dow Jones Indices workbook, either served
+from S&P itself or captured by the Internet Archive with its original
+`spindices.com` / `spglobal.com` source address and capture timestamp.
+The Internet Archive is an archival *transport*, not a new market-data
+publisher. GitHub mirrors and unsourced copies are **not acceptable as
+authoritative inputs** even when their numbers agree.
+
+**Evidence that a reader should be able to verify:** the source URL,
+capture timestamp, downloaded-file SHA-256, sheet, selected quarter, extracted
+reported-EPS and dividends-per-share values, the historical-actual designation,
+the extraction code version, and dates at which each figure was *assumed*
+available to the trading model. Keep observation periods, archive capture
+times, and actual publication times in separate columns.
+
+**Cross-check:** compare each extracted observation against a second dated,
+official source when possible; discrepancies are flagged, not silently
+resolved by choosing the better-performing value. Matching 138 quarters to
+our own previously assembled archive proves consistent re-acquisition from
+the same original records, **not independent confirmation of original
+publication timing or PIT correctness**.
+
+**Incomplete inputs:** if an official capture cannot be obtained, mark
+the corresponding quarter **unverified and unavailable for exact
+reproduction**. Do not silently substitute GitHub data, a current revised
+workbook, or forward-filled data. Distinct proxy-source scenarios can be
+published separately, with their own performance figures and provenance.
+
+This is the provenance standard for a public Freeburg claim; the current
+full-period results must remain explicitly qualified until all necessary
+source quarters meet it.
+
 ## Instructions
 
 From the repository root:
