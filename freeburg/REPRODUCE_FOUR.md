@@ -1,5 +1,7 @@
 # Reproduce Freeburg 4: exact research-model calculations
 
+**Latest audited rerun and its certification limits:** [12 October reproducibility audit](REPRODUCIBILITY_AUDIT_2026-10-12.md). The default delayed-BAA return model is computationally reproducible with the original quarterly CSV; it is **not** an independently release-vintage-certified or next-session-tradable performance series.
+
 **Updated 12 October 2026.** A standalone source-to-returns calculator now
 exists **inside this repository**, independent of the private
 `edge-research-scratchpad` Python code. It regenerates 658 Friday-stamped

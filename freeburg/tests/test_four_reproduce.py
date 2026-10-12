@@ -28,3 +28,25 @@ class FourReproductionTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 calculate(d/"inputs/weekly_prices.csv",d/"inputs/macro.csv",q,b,a)
 if __name__=="__main__":unittest.main()
+
+class TimingAndInputIntegrityTests(unittest.TestCase):
+    def test_duplicate_monthly_baa_rejected(self):
+        with TemporaryDirectory() as temp:
+            d=Path(temp)
+            prepare(ROOT,d/'frozen')
+            q=d/'q.csv'
+            pd.DataFrame({'quarter_date':pd.date_range('1988-03-31','2025-09-30',freq='QE-DEC'),
+                          'as_reported_eps':1.0, 'dividends_per_share':2.0}).to_csv(q,index=False)
+            b=d/'b.csv'
+            pd.DataFrame({'observation_date':['2020-01-01','2020-01-31'],
+                          'BAA':[5,6]}).to_csv(b,index=False)
+            a=d/'agg.csv'
+            pd.DataFrame({'date':['2024-01-05'],'agg':[.01]}).to_csv(a,index=False)
+            with self.assertRaisesRegex(ValueError,'Multiple monthly BAA observations'):
+                calculate(d/'frozen/weekly_prices.csv',d/'frozen/macro.csv',q,b,a)
+    def test_research_outputs_must_not_be_labeled_pit_certified(self):
+        import inspect
+        from freeburg.tools import reproduce_four_from_sources as module
+        source=inspect.getsource(module.calculate)
+        self.assertIn('"historical_pit_certified":False',source)
+        self.assertIn('"executable_backtest_certified":False',source)
