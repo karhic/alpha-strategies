@@ -67,8 +67,7 @@ def _download(url:str,timeout=35)->bytes:
     last=None
     for attempt in range(3):
         try:
-            r=requests.get(url,timeout=timeout,
-                           headers={"User-Agent":"Mozilla/5.0 Freeburg Live-Paper-Research/0.1"})
+            r=requests.get(url,timeout=timeout,headers=({} if "fred.stlouisfed.org" in url else {"User-Agent":"Mozilla/5.0"}))
             r.raise_for_status()
             if not r.content:raise ValueError("Empty provider download")
             return r.content
