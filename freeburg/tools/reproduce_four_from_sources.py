@@ -57,6 +57,12 @@ def calculate(prices,macro,quarterly,baa,agg, *,
     p=_csv(prices,"date")[["spx","cp"]].astype(float)
     m=_csv(macro,"date")[["tbond_10y","tbill_3m","cpi"]].astype(float)
     q=_csv(quarterly,"quarter_date")
+    required=pd.date_range("1988-03-31","2025-09-30",freq="QE-DEC")
+    got=q.reindex(required)
+    missing=got[["as_reported_eps","dividends_per_share"]].isna().any(axis=1)
+    if missing.any():
+        raise ValueError(f"Incomplete S&P quarterly archive: {int(missing.sum())} "
+                         "quarter(s) missing EPS or dividends before 2025 Q3")
     b=_csv(baa,"observation_date")["BAA"].astype(float).dropna()
     ab=_csv(agg,"date")["agg"].astype(float)
     # Missing prices or macro may not be interpreted as negative signals.
