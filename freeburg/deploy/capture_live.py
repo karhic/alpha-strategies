@@ -61,11 +61,21 @@ def h15_weekly(raw:bytes)->dict[str,pd.Series]:
     if missing:raise ValueError("Fed H15 missing required series "+str(sorted(missing)))
     return found
 
-def _download(url:str,timeout=125)->bytes:
-    r=requests.get(url,timeout=timeout,headers={"User-Agent":"Mozilla/5.0 Freeburg Live-Paper-Research/0.1"})
-    r.raise_for_status()
-    if not r.content:raise ValueError("Empty provider download")
-    return r.content
+def _download(url:str,timeout=35)->bytes:
+    """Retry transient provider failures; fail closed after three attempts."""
+    import time
+    last=None
+    for attempt in range(3):
+        try:
+            r=requests.get(url,timeout=timeout,
+                           headers={"User-Agent":"Mozilla/5.0 Freeburg Live-Paper-Research/0.1"})
+            r.raise_for_status()
+            if not r.content:raise ValueError("Empty provider download")
+            return r.content
+        except (requests.exceptions.RequestException,ValueError) as error:
+            last=error
+            if attempt<2:time.sleep(2*(attempt+1))
+    raise RuntimeError(f"Provider repeatedly unavailable: {url.split('?')[0]}") from last
 
 def _persist(path:Path,body:bytes)->str:
     if len(body)>MAX_SIZES[path.name]:raise ValueError("Oversized provider response "+path.name)
