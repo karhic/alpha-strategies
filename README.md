@@ -8,6 +8,8 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Sample:** January 3, 2014 through August 7, 2026 (658 weekly decision observations). The 2014–2025 rows are complete years; **2026 is YTD**.
 
+**Important validation update (12 October 2026):** This table is the original *research-model* backtest, **not yet verified as the output of the released causal strategy engine**. A fresh 658-week cross-implementation check found **256 mismatched sleeve decisions out of 2,632**. The same cash/equity return assumptions applied to the released engine’s decisions imply approximately **8.30% CAGR**, versus **9.21%** below. This discrepancy is under investigation; do not consider the higher figure independently reproduced. [Detailed parity audit](freeburg/OOS_PARITY_FINDING.md).
+
 ### Full-period summary
 
 | Metric | Freeburg 4 | S&P 500 | 60/40 |

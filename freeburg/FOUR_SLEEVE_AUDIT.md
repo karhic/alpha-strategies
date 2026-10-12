@@ -93,3 +93,5 @@ a separate locally downloaded Federal Reserve commercial-paper series, columns
 This check was run against the source weekly returns already held on the
 authorized research VPS. Do not confuse it with a clean-machine complete
 input-data reconstruction. Local market source copies are not committed.
+
+**New material finding:** [Post-2013 causal-strategy/research-model action mismatches](OOS_PARITY_FINDING.md) (256/2,632 sleeve-weeks; composite diagnostic 8.30% versus published 9.21% CAGR). This is now the primary release blocker.
