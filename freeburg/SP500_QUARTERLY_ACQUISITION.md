@@ -83,6 +83,16 @@ This is the provenance standard for a public Freeburg claim; the current
 full-period results must remain explicitly qualified until all necessary
 source quarters meet it.
 
+## Additional independent EPS cross-check (12 October 2026)
+
+A separate professional-data publisher, [AlphaQuery's S&P 500 EPS history](https://www.alphaquery.com/stock/SPX.X/earnings-history), reports actual quarterly S&P 500 EPS figures for the missing interval. We compared its 13 rows for **2022 Q3–2025 Q3** directly against the values independently extracted in our original S&P Wayback research archive.
+
+**All 13 of 13 quarterly EPS amounts match exactly to two decimals** (the EPS precision used by the underlying research workbook). Examples: 2022 Q3 **44.41**, 2023 Q3 **47.65**, 2024 Q4 **57.69**, 2025 Q3 **63.52**.
+
+**Source classification:** this is independent *corroboration*, not the official historical S&P snapshot. Its listed announcement dates are vendor metadata and are **not** independently verified S&P original-release timestamps; the figures may have been revised later. Under the project's first-party-only provenance standard, these corroborated numbers **do not replace the missing original workbooks** in the exact-release path.
+
+This materially reduces concern about simple transcription or spreadsheet-processing errors, but the strict clean-room **source-of-record acquisition remains incomplete**. An alternative reproducibility mode could use this provider with explicit source labels and sensitivity tests, never as an unmarked substitution.
+
 ## Instructions
 
 From the repository root:
