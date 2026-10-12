@@ -71,3 +71,7 @@ The tool asserts branch identifiability by first decomposing the published
 weekly strategy return into the two possible holding returns. Both source
 series and generated replay ledgers remain local and are not vendor-rights
 cleared for redistribution.
+
+## Source-level investigation
+
+The follow-up [OOS root-cause triage](OOS_ROOT_CAUSE_TRIAGE.md) identifies a direct original-90-day-EPS-source explanation for **all 111 Pu Shen** divergences; a **monthly-versus-weekly Moody Baa source** accounts for most Triple-40 divergences (109 down to 20); and the 90-day quarterly dividend lineage accounts for most Competitive divergences (36 down to 8 when other frozen macro series are held fixed). These are **diagnostics, not PIT certification**.
