@@ -30,6 +30,16 @@ def run(root:Path, *, check_broker:bool=True)->dict:
         except Exception as ex:
             result["broker_error"]=type(ex).__name__+": "+str(ex)[:200]
     result["signal_ready"]=False
+    if all(stage["ok"] for stage in result["stages"].values()):
+        try:
+            from freeburg.deploy.shadow_signal import calculate as shadow
+            result["shadow"]=shadow(folder)
+            (folder/"shadow_signal.json").write_text(json.dumps(result["shadow"],indent=2)+"\n")
+            result["shadow_signal_ready"]=True
+        except Exception as ex:
+            result["shadow_signal_ready"]=False
+            result["shadow_error"]=type(ex).__name__+": "+str(ex)[:300]
+
     result["all_data_stages_ok"]=all(s["ok"] for s in result["stages"].values())
     (folder/"run_status.json").write_text(json.dumps(result,indent=2)+"\n")
     latest=root/"latest.json"
