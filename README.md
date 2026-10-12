@@ -1,111 +1,108 @@
-# alpha-strategies
+# Freeburg — systematic equity-risk regime research
 
+**Can simple, interpretable market and macroeconomic signals participate in equity upside while avoiding the worst market drawdowns?** Freeburg is an open research implementation of a family of equity/cash market-timing rules designed to investigate that question.
 
-## Run Freeburg anywhere (Docker)
+The motivation is straightforward: a market-timing system that successfully identifies periods of financial stress might sacrifice some upside in exchange for materially lower losses in bad markets. Historically, Freeburg-style timing approaches have also had an important weakness: **missing substantial portions of equity bull runs**. This project reconstructs the rules, studies that trade-off, and makes their decisions inspectable and runnable as a forward signal monitor.
 
-The default container is a **standalone four-strategy research signal
-monitor**, no IBKR or X account needed:
+The current headline experiment is an **equal-weight composite of four rules**, evaluated weekly over **3 January 2014–7 August 2026 (658 decision weeks)**. Four are used rather than the original six because the data and historical reconstruction for the other two are not sufficiently established for inclusion in the same comparison. The figures below use the *conservative month-end Moody’s Baa timing scenario* and an assumed 90-day release lag for quarterly S&P earnings/dividend data.
 
-```sh
-docker compose up -d --build
-docker compose logs -f freeburg
-docker compose run --rm freeburg freeburg.deploy.status
-```
+> **Research status, not a performance claim.** These are simulated, retrospective research returns—not audited trades, an independently point-in-time-certified historical dataset, or realized investor returns. The historical Friday-close return convention is not the same as a next-session executable fill. The standalone Docker app produces current signals and **does not place orders**.
 
-The container downloads currently available market, macro, EPS and dividend
-data, runs four original strategy classes, independently checks the signals,
-and preserves source hashes and decision history in a Docker volume.
-It refreshes after US market close on weekdays and retries failed feed
-acquisitions. **The public/default container sends no orders or social posts.**
-See [portable setup and limitations](freeburg/deploy/PORTABLE.md). Historical
-lookbacks are retrospective and not fully PIT certified.
+## What the evidence suggests
 
+Freeburg's most interesting feature in the 2014–2026 evaluation is **drawdown reduction**, not return maximization. The modeled four-sleeve composite had an **8.72% CAGR and −19.20% maximum drawdown**, versus **13.99% and −31.68%** for S&P 500 buy-and-hold. It also returned less than the **9.40% CAGR** of the 60/40 comparator. Lower CAGR is not especially surprising in an unusually strong US-equity bull market: a system that sometimes exits to cash will forgo part of a persistent rally.
 
-Systematic market-timing research and historical strategy replications. The [Freeburg project](freeburg/README.md) includes six documented timing sleeves; this report covers a **four-sleeve equal-weight composite**, excluding Prime/Discount and Heine. Five original strategy decision replays are operational; complete independent point-in-time sourcing and the exact Heine bond history remain unresolved.
+The contrast is sharp in stress periods. In **2018** the composite's worst within-year decline was approximately **−2.2%** versus **−17.1%** for the S&P; in **2022**, approximately **−4.2%** versus **−22.5%**. In **2020**, however, Freeburg still suffered a **−19.2%** modeled drawdown amid the COVID crash. This was better than the S&P's **−31.7%**, but less protection than one might hope from a stress-aware strategy. **One possible explanation** is that a fast, exogenous pandemic shock gave financial and economic trend signals little warning; the experiment does not establish that as the cause.
 
-**Data acquisition update:** [Historical S&P quarterly re-download](freeburg/SP500_QUARTERLY_ACQUISITION.md) is working for **138 of 151 quarters with exact matching archived values**, but four newer Wayback workbooks were inaccessible in the live test. The complete 2014–2026 reproduction still requires recovering those newest captures.
+The cost shows up in strong advancing markets, including **2017**, **2019** and **2023**, when the model captured far less of the S&P's gain. Taken together, the result is **suggestive evidence that these indicators contain information about financial-market stress or its absence**, not proof of a profitable crisis-prediction system. A risk-on/risk-off signal may be useful as an input to a broader portfolio even when its standalone CAGR trails buy-and-hold.
 
-**Reproduce the four-sleeve research results:** [Standalone source-to-performance instructions](freeburg/REPRODUCE_FOUR.md). The published results can now be recalculated from explicitly provided source CSVs **without the separate private scratchpad Python code**. Exact output still requires the original archived S&P quarterly values (not redistributed); the README is not a claim of clean-room PIT or fully self-service source acquisition.
+## At a glance — four-sleeve composite
 
-## Equal-weight four-sleeve Freeburg composite — out-of-sample performance
-
-**Portfolio:** 25% each in Primas, Triple-40, Pu Shen, and Competitive Returns, rebalanced weekly. **Comparisons:** S&P 500 buy-and-hold and 60% S&P / 40% AGG adjusted-close bond returns, rebalanced weekly.
-
-**Sample:** January 3, 2014 through August 7, 2026 (658 weekly decision observations). The 2014–2025 rows are complete years; **2026 is YTD**.
-
-**Current conservative research rerun (12 October 2026):** **8.7174% CAGR, −19.1981% max drawdown** using a Baa month-end timing assumption and 90-day quarterly fundamental lag, independently rerun from the source-to-returns code with the original archived quarterly CSV. Historical vintages and executable fills remain uncertified. See [audit and exact input/output SHA hashes](freeburg/REPRODUCIBILITY_AUDIT_2026-10-12.md). The 9.21% table below is the superseded *original research convention*, and should not be used as a clean headline result.
-
-**Important validation update (12 October 2026):** This table is the original *research-model* backtest, **not yet verified as the output of the released causal strategy engine**. A fresh 658-week cross-implementation check found **256 mismatched sleeve decisions out of 2,632**. The same cash/equity return assumptions applied to the released engine’s decisions imply approximately **8.30% CAGR**, versus **9.21%** below. This discrepancy is under investigation; do not consider the higher figure independently reproduced. [Detailed parity audit](freeburg/OOS_PARITY_FINDING.md).
-
-**Reconciliation progress (12 October 2026):** Re-running the *actual released causal engine* with the original research model’s quarter-end-plus-90-day earnings/dividend assumptions yields **658/658 matching Pu Shen actions and 658/658 matching Competitive Returns actions**. Primas already matched 658/658. **Triple-40 remains divergent on 109/658 dates under the released source; an isolated monthly Baa-flag replay reduces these to 20/658, without changing the production strategy.** These are internal model-input reconciliations, **not independently certified historical release vintages**. [Replay evidence](freeburg/OOS_QUARTERLY_REPLAY_PARITY.md).
-
-**Confirmed lookahead warning (12 October 2026):** We reproduced **all 2,632 research-model trading decisions** through the released causal strategy implementations using matching original research inputs. However, we also identified a **real lookahead mechanism in Triple-40**: the original model treated the full-month Moody’s Baa yield as available at the *start of that same month*. Holding all other assumptions fixed, a conservative **month-end Baa timing** changes the four-sleeve CAGR from **9.21% to 8.72%**; the max drawdown in this diagnostic remains −19.20%. Even 8.72% is **not fully PIT verified**, because other fundamental vintages and execution assumptions remain unaudited. [Exact-source replay and timing audit](freeburg/TRIPLE40_MONTHLY_BAA_PIT_FINDING.md).
-
-**Fundamentals availability sensitivity:** We also varied quarterly earnings/dividend availability between **30 and 180 days**, holding the more conservative month-end Baa timing constant. The modeled composite CAGR ranged from **8.47% to 8.77%**, against **8.72%** at the original 90-day lag. **None of these fixed-lag variants establish point-in-time vintage accuracy:** our historical workbook contains values sometimes captured much later. We should use actually dated original releases—not assume either 90 days or a longer delay unnecessarily. [Fundamental availability audit](freeburg/FUNDAMENTAL_AVAILABILITY_ENVELOPE.md).
-
-### Full-period summary
-
-| Metric | Freeburg 4 | S&P 500 | 60/40 |
+| Full evaluation period | Freeburg 4 | S&P 500 | 60/40¹ |
 |---|---:|---:|---:|
-| CAGR | **9.21%** | 13.99% | 9.40% |
+| CAGR | **8.72%** | 13.99% | 9.40% |
 | Maximum drawdown | **−19.20%** | −31.68% | −21.18% |
-| Terminal wealth | 3.05× | 5.24× | 3.12× |
+| Terminal wealth, starting at 1× | **2.88×** | 5.24× | 3.12× |
+| Weekly excess Sharpe² | **0.80** | 0.77 | 0.74 |
 
-### Annual returns
+¹ The benchmark is 60% the same S&P return model plus 40% AGG adjusted-close bond-ETF returns, with weekly rebalancing. ² Weekly excess returns versus contemporaneous nonnegative three-month T-bill carry, annualized with √52. All return models exclude transaction costs and taxes.
+
+## How the strategy works
+
+Four simple, independently evaluated sleeves each vote **risk-on (100% equities)** or **risk-off (cash)** every week. Each receives 25% of the composite's notional capital, so the overall equity target is **0%, 25%, 50%, 75% or 100%**; any remainder is in the model's cash proxy. The project generates a **target allocation**, not a price forecast or a short position.
+
+| Sleeve | Risk-on condition (simplified) | What it tries to capture |
+|---|---|---|
+| **Primas** | S&P 500 above its 52-week moving average **and** commercial-paper yield below its 52-week average | Equity trend with easing short-term funding conditions |
+| **Triple-40** | S&P 500 above its 40-week average **and** either Moody’s Baa yield or commercial-paper yield below its respective 40-week average | Equity momentum alongside improving credit/funding conditions |
+| **Pu Shen** | S&P 500 above its level 50 weeks ago **and** the S&P earnings-yield-minus-commercial-paper spread wider than 50 weeks ago | Equity trend and relative equity valuation versus short-term funding |
+| **Competitive Returns** | At least two of four indicators have fallen over 24 weeks: 10-year Treasury yield, three-month T-bill yield, S&P dividend yield, CPI | A broader cross-asset/macro regime vote |
+
+The full decisions are in small Python strategy classes under [`freeburg/`](freeburg/). The live monitor runs the *same causal-strategy classes* and checks their output independently. This is a long/cash model, not a continuous volatility target, options hedge, or guarantee against sudden crashes.
+
+## Historical performance: full annual comparison
+
+**Evaluation:** 2014–2025 are full decision years; **2026 is year-to-date through 7 August**, not a complete year. Each table compares the conservative four-sleeve composite with S&P buy-and-hold and the weekly-rebalanced 60/40 comparator. Derived machine-readable annual metrics: [`freeburg4_month_end_annual_comparison_2014_2026.csv`](freeburg/reports/freeburg4_month_end_annual_comparison_2014_2026.csv).
+
+
+### Annual compounded return
 
 | Year | Freeburg 4 | S&P 500 | 60/40 |
 |---|---:|---:|---:|
-| 2014 | +8.8% | +14.5% | +11.3% |
+| 2014 | +8.9% | +14.5% | +11.3% |
 | 2015 | +2.2% | +1.3% | +1.1% |
-| 2016 | +5.1% | +13.8% | +9.4% |
-| 2017 | +6.0% | +22.8% | +14.5% |
-| 2018 | +2.2% | -6.0% | -2.9% |
-| 2019 | +11.8% | +30.2% | +21.4% |
+| 2016 | +4.8% | +13.8% | +9.4% |
+| 2017 | +5.5% | +22.8% | +14.5% |
+| 2018 | +1.6% | -6.0% | -2.9% |
+| 2019 | +11.5% | +30.2% | +21.4% |
 | 2020 | +13.0% | +18.3% | +14.7% |
 | 2021 | +23.0% | +26.3% | +13.8% |
-| 2022 | -1.0% | -15.4% | -12.8% |
-| 2023 | +7.5% | +22.5% | +14.2% |
-| 2024 | +17.7% | +28.2% | +17.3% |
+| 2022 | -2.5% | -15.4% | -12.8% |
+| 2023 | +5.9% | +22.5% | +14.2% |
+| 2024 | +16.4% | +28.2% | +17.3% |
 | 2025 | +12.4% | +16.8% | +13.4% |
 | 2026 YTD | +10.3% | +14.3% | +8.4% |
 
-### Annual excess Sharpe ratios
+
+### Annual excess Sharpe ratio
 
 | Year | Freeburg 4 | S&P 500 | 60/40 |
 |---|---:|---:|---:|
-| 2014 | 1.25 | 1.25 | 1.72 |
-| 2015 | 0.51 | 0.16 | 0.17 |
-| 2016 | 1.42 | 1.06 | 1.21 |
-| 2017 | 2.48 | 3.38 | 3.69 |
-| 2018 | 0.20 | -0.36 | -0.40 |
-| 2019 | 1.25 | 2.30 | 2.87 |
+| 2014 | 1.26 | 1.25 | 1.72 |
+| 2015 | 0.49 | 0.16 | 0.17 |
+| 2016 | 1.38 | 1.06 | 1.21 |
+| 2017 | 2.43 | 3.38 | 3.69 |
+| 2018 | -0.16 | -0.36 | -0.40 |
+| 2019 | 1.21 | 2.30 | 2.87 |
 | 2020 | 0.68 | 0.68 | 0.74 |
 | 2021 | 2.08 | 1.96 | 1.76 |
-| 2022 | -1.12 | -0.70 | -0.95 |
-| 2023 | 1.30 | 1.19 | 0.91 |
-| 2024 | 1.32 | 1.69 | 1.38 |
+| 2022 | -1.24 | -0.70 | -0.95 |
+| 2023 | 0.35 | 1.19 | 0.91 |
+| 2024 | 1.17 | 1.69 | 1.38 |
 | 2025 | 0.74 | 0.75 | 0.89 |
 | 2026 YTD | 1.39 | 1.45 | 1.14 |
 
-### Annual Calmar ratios
+
+### Annual Calmar ratio
 
 | Year | Freeburg 4 | S&P 500 | 60/40 |
 |---|---:|---:|---:|
-| 2014 | 1.93 | 2.41 | 3.72 |
-| 2015 | 1.28 | 0.13 | 0.20 |
-| 2016 | 3.34 | 1.62 | 2.12 |
-| 2017 | 6.09 | 11.07 | 13.17 |
-| 2018 | 2.36 | -0.35 | -0.30 |
-| 2019 | 2.17 | 4.69 | 6.78 |
+| 2014 | 1.94 | 2.41 | 3.72 |
+| 2015 | 1.24 | 0.13 | 0.20 |
+| 2016 | 3.13 | 1.62 | 2.12 |
+| 2017 | 5.62 | 11.07 | 13.17 |
+| 2018 | 0.73 | -0.35 | -0.30 |
+| 2019 | 2.11 | 4.69 | 6.78 |
 | 2020 | 0.68 | 0.58 | 0.70 |
 | 2021 | 6.71 | 6.84 | 5.44 |
-| 2022 | -0.37 | -0.69 | -0.67 |
-| 2023 | 10.81 | 2.30 | 1.87 |
-| 2024 | 5.62 | 5.23 | 4.16 |
+| 2022 | -0.60 | -0.69 | -0.67 |
+| 2023 | 6.30 | 2.30 | 1.87 |
+| 2024 | 5.22 | 5.23 | 4.16 |
 | 2025 | 1.28 | 1.00 | 1.41 |
 | 2026 YTD | 2.88 | 2.90 | 2.57 |
 
-### Maximum drawdown by calendar year
+
+### Maximum within-calendar-year drawdown
 
 | Year | Freeburg 4 | S&P 500 | 60/40 |
 |---|---:|---:|---:|
@@ -113,29 +110,84 @@ Systematic market-timing research and historical strategy replications. The [Fre
 | 2015 | -1.8% | -9.4% | -5.6% |
 | 2016 | -1.5% | -8.5% | -4.5% |
 | 2017 | -1.0% | -2.1% | -1.1% |
-| 2018 | -0.9% | -17.1% | -9.9% |
+| 2018 | -2.2% | -17.1% | -9.9% |
 | 2019 | -5.4% | -6.4% | -3.2% |
 | 2020 | -19.2% | -31.7% | -21.2% |
 | 2021 | -3.4% | -3.8% | -2.5% |
-| 2022 | -2.7% | -22.5% | -19.0% |
-| 2023 | -0.7% | -9.8% | -7.6% |
+| 2022 | -4.2% | -22.5% | -19.0% |
+| 2023 | -0.9% | -9.8% | -7.6% |
 | 2024 | -3.1% | -5.4% | -4.2% |
 | 2025 | -9.7% | -16.9% | -9.5% |
 | 2026 YTD | -6.0% | -8.4% | -5.5% |
 
-### Methodology and limitations
 
-- **Annual returns:** compounded model returns over weekly close-to-next-close holding periods, attributed to the Friday *decision* date. A return attributable to a December decision may settle in January.
-- **Excess Sharpe:** mean weekly return above contemporaneous nonnegative three-month Treasury-bill carry divided by weekly excess-return volatility, annualized by √52. Unlike the raw-return Sharpe shown in some sleeve summaries, this metric deducts the short-term cash benchmark. Extremely low-volatility ratios are withheld in the individual reports.
-- **Annual Calmar:** yearly compounded return divided by maximum drawdown *within that calendar year*; for partial 2026, the YTD return is annualized in the numerator. It is **not** the conventional three-year rolling Calmar, and can be unstable when yearly drawdowns are tiny.
-- **Annual max drawdown:** peak-to-trough within each year, resetting the starting equity curve to 1.0 every January. The full-period max drawdown above does **not** reset.
-- **Portfolio accounting:** the four sleeves are held equally and rebalanced weekly. The 60/40 benchmark is rebalanced weekly. S&P returns use the same price-plus-dividend-accrual approximation as the Freeburg OOS research; the bond proxy is AGG adjusted-close total returns. No additional transaction costs or taxes are included.
-- **Provenance:** the existing 90-day-lag post-2013 Freeburg research in [edge-research-scratchpad](https://github.com/karhic/edge-research-scratchpad), with an AGG historical series acquired for the comparison. This is simulated historical performance, **not** live audited performance or a fully certified independent point-in-time reproduction. Third-party historical market-data redistribution rights are not assumed.
+**Definitions.** Annual returns compound the simulated Friday-close-to-next-Friday-close periods and attribute each return to its decision Friday; the holding period can cross a calendar year. *Excess Sharpe* uses weekly return minus the nonnegative three-month T-bill benchmark, divided by weekly excess-return standard deviation and multiplied by √52. *Annual Calmar* divides that year's compounded return by the magnitude of its **within-year** maximum drawdown (2026 annualizes the YTD return first); it is **not** a conventional three-year Calmar. *Annual max drawdown* resets the starting wealth to 1 each January; the full-period maximum does not reset.
 
-**Individual annual reports:** [Primas](freeburg/primas/reports/README.md) · [Triple-40](freeburg/triple40/reports/README.md) · [Pu Shen](freeburg/pushen/reports/README.md) · [Competitive Returns](freeburg/competitive/reports/README.md).
+### What we tested for robustness
 
-**Execution robustness:** A [one-week-late signal sensitivity test](freeburg/FOUR_EXECUTION_STRESS.md) reduces the 2014–2026 model CAGR from 9.20% to 8.22% and increases maximum drawdown from −19.20% to −22.10% over the identical 657-week comparison. This does not resolve original publication-vintage or realistic execution-time verification.
+- **Corrected Baa timing.** The original monthly Baa series had been treated as available at the *start* of its observation month, which leaks information about the full month. Moving that observation to **month-end** lowers the four-sleeve modeled CAGR from **9.21% to 8.72%**. The original result is retained only as a labeled historical diagnostic, not the headline result. [Timing investigation](freeburg/TRIPLE40_MONTHLY_BAA_PIT_FINDING.md).
+- **Fundamentals-release sensitivity.** Holding the month-end Baa convention constant and varying the assumed quarter-end EPS/dividend lag from **30 to 180 days** produced modeled composite CAGRs between **8.47% and 8.77%**. This is a sensitivity study, **not** confirmation that hindsight-revised figures existed on those dates. [Availability study](freeburg/FUNDAMENTAL_AVAILABILITY_ENVELOPE.md).
+- **Late positioning stress.** Delaying every sleeve's position by a **whole additional week** changed CAGR from **8.70% to 8.32%** on the same 657-week aligned sample, while maximum drawdown increased from **−19.20% to −22.10%**. This is intentionally harsher than trading at the next market open, but does **not** substitute for a true next-session executable-price backtest. [Audit](freeburg/REPRODUCIBILITY_AUDIT_2026-10-12.md).
+- **Implementation parity.** On the same fixed historical research inputs, all **2,632 of 2,632** decisions generated by the **four actual causal-engine strategy classes** matched the independently calculated research decisions. Reconstructing modeled sleeve and composite returns from those engine actions also matched to numerical precision. These checks establish *computational* reproducibility, not historical source-vintage certification. [Verification tool](freeburg/tools/verify_causal_parity.py).
 
-**Execution sensitivity:** Delaying the four sleeves’ recovered weekly equity/cash positions by one full decision week reduced aligned-sample CAGR from **9.20% to 8.22%**, and changed maximum drawdown from **−19.20% to −22.10%**. This is a model-accounting sensitivity test, *not* a certified point-in-time next-open execution replay. [Method and limitations](freeburg/FOUR_SLEEVE_AUDIT.md).
+## Data provenance and interpretation
 
-**Reproduction tools and source notes:** [Four-sleeve reproducibility/PIT audit](freeburg/FOUR_SLEEVE_AUDIT.md) · [Freeburg data quickstart](freeburg/QUICKSTART_DATA.md) · [Release status](freeburg/RELEASE_STATUS.md). The annual portfolio statistics above use the same local weekly OOS research sample as the four individual sleeve reports.
+This research tries to make assumptions and lineage inspectable, rather than hiding a backtest in a single performance number:
+
+| Input family | Research or forward-feed route | Qualification |
+|---|---|---|
+| S&P levels and trade-return proxy | Historical weekly price series; user-side Yahoo downloads | Index-level weekly close returns, not audited SPY fills; provider redistribution terms apply |
+| Treasury yields and commercial paper | Federal Reserve H.15, other historical macro snapshots | Some older observations are retrospectively processed; exact vintage/release-time coverage is incomplete |
+| Moody’s Baa yields | FRED historical monthly series | **Month-end observation delay** used in headline scenario; actual historical first-release timestamps still require verification |
+| Earnings and dividends | Archived S&P reports/Wayback/FRASER/GovInfo material; current data capture | **90 days after quarter-end** assumed in model; archived values can reflect subsequent revisions; original quarterly CSV not redistributed |
+| Inflation / CPI | Historical macro/CPI sources | Historical vintages and their first release dates are not universally independently verified |
+| Bond benchmark | User-downloaded AGG adjusted-close return series | ETF proxy, not a perfectly matched investable 60/40 implementation |
+
+The original research table had a **lookahead error in Baa timing**, which this headline analysis corrects. Nevertheless, a fixed 90-day lag for EPS/dividends is *not evidence* that each exact retrospectively archived value existed 90 days after quarter-end. Likewise, a Friday signal calculated using a completed Friday close cannot actually be filled at that already-known closing price. Neither issue is concealed in the reported figures.
+
+**Research result ≠ independently time-stamped investment track record.** The current audit establishes that the coded rules, decisions and stated *model accounting* agree; it does not prove independent historical data-vintage availability, transaction-cost-adjusted fills, or real investor performance. External archived quarterly source files remain necessary to reconstruct the exact historical numbers. See [reproducibility audit](freeburg/REPRODUCIBILITY_AUDIT_2026-10-12.md), [source-to-performance reproduction](freeburg/REPRODUCE_FOUR.md), and [S&P archive coverage](freeburg/SP500_QUARTERLY_ACQUISITION.md).
+
+## Run the current signal monitor with Docker
+
+The default package is a **standalone, read-only research signal monitor**, not an auto-trading bot. It downloads current market, macroeconomic, earnings and dividend inputs; keeps timestamped source snapshots and hashes; computes the four risk-on/off signals through the causal engine; checks them independently; and schedules subsequent refreshes. It persists results in a Docker volume. **No brokerage login, X/Twitter account or API keys are required for the default installation.**
+
+After the release branch is merged into `main` and the repository made publicly readable:
+
+```bash
+git clone https://github.com/karhic/alpha-strategies.git
+cd alpha-strategies
+docker compose up -d --build
+docker compose logs -f freeburg
+docker compose run --rm freeburg freeburg.deploy.status
+```
+
+The first run collects a **retrospective history for indicator warm-up**; this is not an independently historical point-in-time backtest. The monitor retries transient upstream outages and rejects stale or inconsistent inputs rather than silently making up a signal. Compose schedules capture on weekday evenings and retains signal history across restarts. Use `docker compose down` to stop without deleting data; `docker compose down -v` **deletes** the named data volume.
+
+**Reproducibility has two meanings here:** (1) a stranger can build the container and independently run the current research monitor, which was demonstrated in a clean-container test; (2) the entire 2014–2026 historical result can be rebuilt from contemporaneously available, independently licensed data. The latter is **not yet achieved**. Exact deterministic replay of the existing historical **model** is available with separately supplied source CSVs; see [instructions](freeburg/REPRODUCE_FOUR.md) and [engine-parity checks](freeburg/tools/verify_causal_parity.py).
+
+## Forward operation, IBKR paper trading and X
+
+The research VPS runs a **forward signal-capture service** with independent shadow verification, a Docker read-only monitor and separately gated scheduler jobs. One IBKR **paper** account is configured for an attempted Monday SPY target-weight rebalance, subject to broker permissions, source freshness, order-size caps and idempotency checks. **This is a paper-trading prototype, not production/live-money execution; successful order placement and fills should not be inferred from a scheduled timer.** The Docker demo has no order permission. [Paper workflow and operational gates](freeburg/deploy/AUTOPAPER.md) · [Docker monitor architecture](freeburg/deploy/DOCKER_OPERATIONS.md).
+
+The X/Twitter publishing integration currently prepares signal drafts and is deliberately **not posting** without separately configured API access and explicit permission. [Publication setup](freeburg/deploy/AUTO_X.md). Neither broker credentials nor social-network credentials belong in Git. The forward signal record includes raw-source provenance and hashes for later inspection.
+
+## Repository map and verification
+
+- [`freeburg/{primas,triple40,pushen,competitive}/strategy.py`](freeburg/README.md): original, small, inspectable rules, plus per-sleeve research notes and annual reports ([Primas](freeburg/primas/reports/README.md), [Triple-40](freeburg/triple40/reports/README.md), [Pu Shen](freeburg/pushen/reports/README.md), [Competitive](freeburg/competitive/reports/README.md)). **Those older individual report tables reflect their original research conventions; they are not all regenerated for the corrected composite.**
+- [`freeburg/tools/reproduce_four_from_sources.py`](freeburg/tools/reproduce_four_from_sources.py): source-CSV-to-signal-and-portfolio calculation; outputs weekly decisions, returns, annual tables and a hashed manifest.
+- [`freeburg/tools/verify_causal_parity.py`](freeburg/tools/verify_causal_parity.py): full-period comparisons of the independent calculations with the actual four causal strategy classes, plus ledger-to-research-accounting checks.
+- [`freeburg/deploy/`](freeburg/deploy/): forward data ingestion, independent signal check, scheduler, paper-trading prototype and optional X drafts.
+- [`freeburg/tests/`](freeburg/tests/): fail-closed data-validation, strategy, deployment and reproduction checks.
+- [`freeburg/RELEASE_STATUS.md`](freeburg/RELEASE_STATUS.md): status of the wider six-sleeve historical reconstruction, including unresolved Heine index sourcing and Prime/Discount data questions. The present README deliberately reports **four** sleeves only.
+
+To run the repository's Python unit tests, install dependencies from [`freeburg/requirements-data.txt`](freeburg/requirements-data.txt), then run:
+
+```bash
+python -m unittest discover -s freeburg/tests -p 'test_*.py' -v
+```
+
+The current audit suite passed **52 tests** on the connected VPS. Test success does not remove the empirical historical data-vintage caveats above.
+
+---
+
+*Project type: independent open research and forward paper-trading prototype. Not investment advice. No representation of live audited returns, guaranteed drawdown protection, or market-beating CAGR.*
