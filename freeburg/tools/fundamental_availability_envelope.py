@@ -108,7 +108,7 @@ def analyse(weekly,quarterly,pu_events,comp_events,
     reference_comp=(wk.Competitive-wk.stock).abs() < (wk.Competitive-cash_cp*.9).abs()
     reference_t=(wk.Triple40-wk.stock).abs() < (wk.Triple40-cash_cp*.9).abs()
     if len(index)!=658:raise ValueError('Expected 658-week comparison sample')
-    for label,lag in [('30d',30),('45d',45),('60d',60),('75d',75),('90d',90),
+    for label,lag in [('0d',0),('7d',7),('14d',14),('21d',21),('30d',30),('45d',45),('60d',60),('75d',75),('90d',90),
                       ('105d',105),('120d',120),('150d',150),('180d',180),
                       ('wayback_capture_asof',None)]:
         pu,co,eps,div=get_signal(lag)

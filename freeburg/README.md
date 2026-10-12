@@ -81,3 +81,8 @@ This clean project ports canonical results, source logic, timing conventions and
 Where a result is unresolved, the unresolved state is documented explicitly rather than tuned away.
 
 The generic runtime remains outside this repository. Freeburg-specific strategy and data code live here; generic replay/live machinery stays in `causal-trading-engine`; analytics and optional third-party verification remain downstream concerns.
+
+
+### Reproducing the four-sleeve modeled return series
+
+[Exact instructions, sources, checks, and important limitations](REPRODUCE_FOUR.md). This standalone tool runs from local CSV source inputs without the separate private scratchpad code; a separately obtained original archived S&P quarterly source is still necessary for identical historical statistics.
