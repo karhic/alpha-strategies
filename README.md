@@ -101,4 +101,6 @@ Systematic market-timing research and historical strategy replications. The [Fre
 
 **Execution robustness:** A [one-week-late signal sensitivity test](freeburg/FOUR_EXECUTION_STRESS.md) reduces the 2014–2026 model CAGR from 9.20% to 8.22% and increases maximum drawdown from −19.20% to −22.10% over the identical 657-week comparison. This does not resolve original publication-vintage or realistic execution-time verification.
 
+**Execution sensitivity:** Delaying the four sleeves’ recovered weekly equity/cash positions by one full decision week reduced aligned-sample CAGR from **9.20% to 8.22%**, and changed maximum drawdown from **−19.20% to −22.10%**. This is a model-accounting sensitivity test, *not* a certified point-in-time next-open execution replay. [Method and limitations](freeburg/FOUR_SLEEVE_AUDIT.md).
+
 **Reproduction tools and source notes:** [Four-sleeve reproducibility/PIT audit](freeburg/FOUR_SLEEVE_AUDIT.md) · [Freeburg data quickstart](freeburg/QUICKSTART_DATA.md) · [Release status](freeburg/RELEASE_STATUS.md). The annual portfolio statistics above use the same local weekly OOS research sample as the four individual sleeve reports.

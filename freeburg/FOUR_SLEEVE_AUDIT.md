@@ -43,3 +43,53 @@ python -m freeburg.reproduce_available --mode baseline --output-dir local/four-b
 For explicitly including the non-headline historical Prime/Discount sleeve, pass `--sleeves primas triple40 pushen competitive prime_discount`.
 
 For the independently reconstructed source-fundamentals replay, use `--mode sources` with the FRASER/GovInfo source inputs documented in [release status](RELEASE_STATUS.md). That mode is limited to Pu Shen and Competitive and still retains frozen macro columns.
+
+## New accounting-decomposition and execution-latency check (12 October 2026)
+
+We tested the **actual published 2014–7 Aug 2026 weekly OOS model** without
+rewriting the original signal rules. For each strategy and each Friday, its
+published return was compared against precisely two accounting alternatives:
+(1) next-week stock price return plus dividend accrual and (2) Fed commercial
+paper cash yield divided by 52 (with the documented 90% carry convention for
+Triple-40 and Competitive Returns).
+
+All **2,632 strategy-week returns** fit *exactly one of those accounting
+branches*, to floating-point tolerance: maximum absolute residual at or below
+**1.1 × 10⁻¹⁶**. This demonstrates that the published model's per-week return
+accounting is internally consistent with the original stocks-versus-cash
+rule. It is **not** an independent reconstruction of the underlying four
+signal values or source publication dates; which branch was chosen is inferred
+from already-computed returns, so it cannot validate trading causality.
+
+We then froze the recovered risk-on decisions and applied a **one-full-week
+positioning delay**, retaining the same Friday-to-Friday stock returns and
+weekly cash alternatives. To compare like-for-like, the first OOS week is
+removed from *both* baseline and delayed results.
+
+| Metric | Existing weekly positioning | One-week-delayed positioning |
+|---|---:|---:|
+| Period | 2014-01-10–2026-08-07 | 2014-01-10–2026-08-07 |
+| Weeks | 657 | 657 |
+| CAGR | **9.20%** | **8.22%** |
+| Max drawdown | **−19.20%** | **−22.10%** |
+| Raw annualized weekly Sharpe | **1.08** | **0.96** |
+| Terminal wealth | **3.04×** | **2.71×** |
+
+This sensitivity shows the results depend somewhat, but **not catastrophically**,
+on getting positioned promptly after observing the signal. Crucially a whole
+week of latency is a deliberately harsh *stress scenario*, **not** a proper
+next-market-open fill backtest. Historical timestamps and next-session fills
+remain to be independently validated before claiming a complete PIT system.
+
+### Reproduction
+
+A simple CSV with the 2014–2026 model's weekly original returns (\`date\`,
+\`Primas\`, \`Triple40\`, \`PuShen\`, \`Competitive\`, \`stock\`) is used with
+a separate locally downloaded Federal Reserve commercial-paper series, columns
+\`date\` and \`cp\` (annual interest-rate percentage).
+
+\`python -m freeburg.tools.audit_oos_signal_delay --weekly-returns local/oos_weekly.csv --cp-weekly local/cp_weekly.csv --output local/delay_audit.json\`
+
+This check was run against the source weekly returns already held on the
+authorized research VPS. Do not confuse it with a clean-machine complete
+input-data reconstruction. Local market source copies are not committed.
