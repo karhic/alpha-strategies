@@ -12,6 +12,22 @@ We performed a complete deterministic local rerun from the checked-in source-to-
 - Quarterly private-source CSV SHA-256: `7626b7e71051d7b37363afa0c74100e6a315b6de39b8908a61792dad2cbe01c1`.
 - See each `run_manifest.json` for all five input checksums. Third-party source files are deliberately **not** committed to this public-candidate repository.
 
+## Actual causal-engine signal parity verified
+
+The new `freeburg.tools.verify_causal_parity` runs the **four actual vendored causaltrader strategy classes** on the same explicit source-to-research-model inputs, then compares every action against the independently calculated weekly signal table. Running the 2012-onward warm-up and the complete 2014-2026 evaluation produced **658/658 exact weekly action matches per sleeve, 2,632/2,632 in aggregate, with zero missing or mismatched actions**. Per-sleeve engine audit ledgers and their SHA-256 hashes are produced locally; `parity_report.json` records all input hashes.
+
+This is model-to-engine equivalence using retrospective/frozen observations, **not** proof that an investor actually had those figures on each Friday. The synthetic after-close timestamps in this parity harness must not be used to claim PIT-causality or executable Friday fills. A full exact-source verification command follows (from repository root with the listed inputs):
+
+```sh
+PYTHONPATH=./freeburg/vendor python -m freeburg.tools.verify_causal_parity \
+ --weekly-prices local/four/frozen/weekly_prices.csv \
+ --macro local/four/frozen/macro.csv \
+ --quarterly local/four/quarterly.csv \
+ --baa-monthly local/four/market/fred_baa_monthly.csv \
+ --agg local/four/market/agg_weekly_forward.csv \
+ --output-dir local/four/causal-parity
+```
+
 ## Honest certification status
 
 **Model reproduction: verified on one VPS with the stated inputs.**

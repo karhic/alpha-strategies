@@ -1,5 +1,7 @@
 # Reproduce Freeburg 4: exact research-model calculations
 
+**Causal-engine parity:** The actual four strategy classes now reproduce **2,632/2,632 decisions** against the frozen research model (no mismatches), with separately hashed canonical ledgers. This is computational parity, not proof of historically available data or executable fills. Run `python -m freeburg.tools.verify_causal_parity --help` for the full audit CLI.
+
 **Latest audited rerun and its certification limits:** [12 October reproducibility audit](REPRODUCIBILITY_AUDIT_2026-10-12.md). The default delayed-BAA return model is computationally reproducible with the original quarterly CSV; it is **not** an independently release-vintage-certified or next-session-tradable performance series.
 
 **Updated 12 October 2026.** A standalone source-to-returns calculator now
