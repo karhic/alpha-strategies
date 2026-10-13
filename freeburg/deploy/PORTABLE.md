@@ -18,6 +18,6 @@ docker compose down  # retains the state volume
 docker compose down -v  # deletes source records: use ONLY if intentionally resetting
 ```
 
-Note that first-run historical lookback is retrospectively fetched and **not** independently PIT-certified. Feeds can change or become unavailable; the run records failures and refuses full-signal readiness rather than silently substituting values. This project uses secondary data sources with provider-specific access terms. The vendored causaltrader code is identified by its upstream source revision in `freeburg/vendor/ENGINE_PROVENANCE.md`.
+Note that first-run historical lookback is retrospectively fetched and **not** independently PIT-certified. Feeds can change or become unavailable; the run records failures and refuses full-signal readiness rather than silently substituting values. This project uses secondary data sources with provider-specific access terms. The `causaltrader` package is installed from an immutable, pinned public source revision during the Docker build. See `freeburg/requirements-engine.txt`.
 
 **Publication access:** the GitHub repository and engine must be publicly readable for the literal HTTPS clone command to work for unauthenticated visitors. Private GitHub checkouts require the user's normal GitHub authentication and cannot be presented as zero-login public reproducibility.

@@ -230,3 +230,7 @@ The current audit suite passed **52 tests** on the connected VPS. Test success d
 ---
 
 *Project type: independent open research and forward paper-trading prototype. Not investment advice. No representation of live audited returns, guaranteed drawdown protection, or market-beating CAGR.*
+
+### Reusable backtesting engine
+
+Freeburg depends on the separately maintained [CausalTrader event-driven trading engine](https://github.com/karhic/causal-trading-engine), installed from immutable commit `08f16c264fdae660f044abbccf512532ba29d9d5` during Docker builds (rather than maintaining a second vendored copy). The backtest, strategy and monitoring implementations use the same broker-neutral interfaces. See [`freeburg/requirements-engine.txt`](freeburg/requirements-engine.txt) for the pinned dependency; the standalone engine may evolve independently.

@@ -19,7 +19,7 @@ The new `freeburg.tools.verify_causal_parity` runs the **four actual vendored ca
 This is model-to-engine equivalence using retrospective/frozen observations, **not** proof that an investor actually had those figures on each Friday. The synthetic after-close timestamps in this parity harness must not be used to claim PIT-causality or executable Friday fills. A full exact-source verification command follows (from repository root with the listed inputs):
 
 ```sh
-PYTHONPATH=./freeburg/vendor python -m freeburg.tools.verify_causal_parity \
+python -m freeburg.tools.verify_causal_parity \
  --weekly-prices local/four/frozen/weekly_prices.csv \
  --macro local/four/frozen/macro.csv \
  --quarterly local/four/quarterly.csv \

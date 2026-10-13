@@ -1,6 +1,6 @@
 # Code licensing and market-data policy
 
-Freeburg code (including the vendored, author-owned causaltrader snapshot) is
+Freeburg code (excluding the separately versioned CausalTrader dependency, which is installed directly from its upstream source) is
 licensed under the [MIT License](LICENSE). This grant covers the project's
 authored code and documentation, **not third-party source datasets**.
 
