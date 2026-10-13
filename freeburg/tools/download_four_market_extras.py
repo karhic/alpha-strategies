@@ -4,7 +4,7 @@ Outputs are local files only. Read provider terms before running; license,
 historical revisions and publication-time accuracy are not certified.
 """
 from __future__ import annotations
-import argparse,hashlib,json
+import argparse,hashlib,json,time
 from pathlib import Path
 import pandas as pd
 import requests
@@ -17,8 +17,15 @@ def fetch(output:Path)->dict:
     if output.exists() and any(output.iterdir()):raise FileExistsError("New empty output directory required")
     output.mkdir(parents=True,exist_ok=True)
     headers={"User-Agent":"Mozilla/5.0 Freeburg local research"}
-    a=requests.get(FRED,headers=headers,timeout=80)
-    a.raise_for_status()
+    a=None
+    for attempt in range(4):
+        try:
+            a=requests.get(FRED,headers=headers,timeout=22)
+            a.raise_for_status()
+            break
+        except requests.RequestException:
+            if attempt==3:raise
+            time.sleep(2+attempt*2)
     import io
     monthly=pd.read_csv(io.BytesIO(a.content),parse_dates=["observation_date"])
     if not {"observation_date","BAA"}.issubset(monthly.columns) or len(monthly)<180:
