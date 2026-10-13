@@ -1,4 +1,18 @@
+## One-command public-data historical attempt (Docker)
+
+```bash
+docker compose run --rm freeburg freeburg.tools.public_reproduce
+```
+
+This is **on-demand** and separate from the default forward signal monitor. It downloads available original S&P Wayback workbooks (1988–2022), fills 2022–2025 quarterlies using the **same** public AlphaQuery EPS and index-derived dividends as the live monitor, acquires S&P 500 closes, Fed H.15 and FRED histories, and checks all 2,632 decisions through the canonical causal engine. The command makes a full 2014–August 2026 portfolio calculation when all providers respond and pass the checks. Source snapshots, failed-stage progress and results are persisted under `/data/historical/public-rebuild` in the Docker volume. To start anew after a provider failure, choose a different empty `--output-dir` or intentionally clean that *historical* subfolder.
+
+**Evidence / limitations:** The **entire Docker command completed successfully from a new empty `/data/historical/clean-20261013-01` directory on 13 October 2026**, autonomously fetching its public inputs, computing 658 weeks, verifying all 2,632 causal-engine decisions and reconstructing return accounting (8.7173576% composite modeled CAGR, −19.1981% drawdown). A separate run with cached public archives also passed (8.7173588% CAGR). Minor differences reflect later provider snapshots. This proves a runnable one-command *retrospective numerical* rebuild, not independently original-release-certified PIT. Internet Archive availability is not guaranteed. Data from retrospective vendor snapshots may have been revised. Strict original-publication PIT timing and real executable Friday-after-close fills remain unverified, and this command does not claim them. Data suppliers may impose access/redistribution terms; the tool downloads locally instead of adding vendor content to Git. No brokerage credentials are needed.
+
 # Reproduce Freeburg 4: exact research-model calculations
+
+**Causal-engine parity:** The actual four strategy classes now reproduce **2,632/2,632 decisions** against the frozen research model (no mismatches), with separately hashed canonical ledgers. This is computational parity, not proof of historically available data or executable fills. Run `python -m freeburg.tools.verify_causal_parity --help` for the full audit CLI.
+
+**Latest audited rerun and its certification limits:** [12 October reproducibility audit](REPRODUCIBILITY_AUDIT_2026-10-12.md). The default delayed-BAA return model is computationally reproducible with the original quarterly CSV; it is **not** an independently release-vintage-certified or next-session-tradable performance series.
 
 **Updated 12 October 2026.** A standalone source-to-returns calculator now
 exists **inside this repository**, independent of the private

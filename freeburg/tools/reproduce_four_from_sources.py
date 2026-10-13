@@ -24,6 +24,7 @@ END="2026-08-07"
 def _csv(path, index_col):
     df=pd.read_csv(path,parse_dates=[index_col]).set_index(index_col).sort_index()
     if df.index.has_duplicates:raise ValueError(f"Duplicate dates in {path}")
+    if df.index.isna().any():raise ValueError(f"Missing dates in {path}")
     return df
 
 def _ttm(q,kind,cal,lag):
@@ -64,6 +65,8 @@ def calculate(prices,macro,quarterly,baa,agg, *,
         raise ValueError(f"Incomplete S&P quarterly archive: {int(missing.sum())} "
                          "quarter(s) missing EPS or dividends before 2025 Q3")
     b=_csv(baa,"observation_date")["BAA"].astype(float).dropna()
+    if (b.index.to_period("M").duplicated()).any():
+        raise ValueError("Multiple monthly BAA observations; monthly availability ambiguous")
     ab=_csv(agg,"date")["agg"].astype(float)
     # Missing prices or macro may not be interpreted as negative signals.
     cal=p.index
@@ -122,6 +125,10 @@ def calculate(prices,macro,quarterly,baa,agg, *,
     returns["rf"]=(m.tbill_3m.clip(lower=0)/5200).reindex(out_idx)
     returns["agg"]=ab.reindex(out_idx)
     if returns.isna().any().any():raise ValueError("Incomplete weekly return, including next-week and AGG")
+    if not np.isfinite(returns.to_numpy(dtype=float)).all():
+        raise ValueError("Nonfinite weekly returns")
+    if (returns[list(SLEEVES)+["stock","agg"]]<=-1).any().any():
+        raise ValueError("Invalid weekly total return <= -100%")
     signals=s.loc[out_idx,SLEEVES].astype(int).copy()
     returns.index.name="date";signals.index.name="date"
     composite=returns[list(SLEEVES)].mean(axis=1)
@@ -134,6 +141,7 @@ def calculate(prices,macro,quarterly,baa,agg, *,
                 "Baa availability convention is an assumption, not documented original release timing",
         "earnings_warning":"archive retrospective quarterly values may be revised; fixed-lag does not validate PIT",
         "execution_warning":"Friday close price is used after Friday-stamped signals, not executable next-open accounting",
+        "historical_pit_certified":False,"executable_backtest_certified":False,
         "composite":_metrics(composite),
         "sp500":_metrics(returns.stock),
         "60_40":_metrics(benchmark)
@@ -170,6 +178,9 @@ def main():
     a=p.parse_args()
     r,s,m=calculate(a.weekly_prices,a.macro,a.quarterly,a.baa_monthly,a.agg,
                     lag_days=a.lag_days,baa_availability=a.baa_availability)
+    m["input_sha256"]={key:hashlib.sha256(getattr(a,key).read_bytes()).hexdigest()
+                       for key in ("weekly_prices","macro","quarterly","baa_monthly","agg")}
+    m["input_provenance_status"]="USER_SUPPLIED_UNVERIFIED_RELEASE_VINTAGES"
     report(r,s,m,a.output_dir)
     print(json.dumps(m,indent=2))
 if __name__=="__main__":main()

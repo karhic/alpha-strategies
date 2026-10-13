@@ -1,3 +1,5 @@
+> **13 October update:** A **fresh empty-directory Docker source acquisition** successfully recovered all 21 archived S&P workbooks, including the four previously intermittent captures; the one-command full 2014–2026 public-source replay then passed **2,632/2,632 causal-engine parity checks and accounting checks**. The 13-quarter AlphaQuery/index-mathematics fallback remains available if the newest archive is temporarily inaccessible. Results are retrospective research scenarios, not certified first-release PIT trades. See [Docker command](REPRODUCE_FOUR.md).
+
 # Re-acquiring the missing historical S&P earnings/dividend source
 
 **Status: acquisition pipeline implemented and live-tested, 12 October 2026.**
