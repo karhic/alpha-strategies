@@ -20,7 +20,7 @@ def fetch(output:Path)->dict:
     a=None
     for attempt in range(4):
         try:
-            a=requests.get(FRED,headers=headers,timeout=22)
+            a=requests.get(FRED,timeout=22)
             a.raise_for_status()
             break
         except requests.RequestException:
