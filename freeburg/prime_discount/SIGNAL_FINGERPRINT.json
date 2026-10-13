@@ -1,0 +1,12 @@
+{
+  "profile": "offline_historical_90pct_tbill",
+  "start": "1970-01-02",
+  "end": "2013-09-27",
+  "equity_exposure_fraction": 0.34647393780113883,
+  "risk_on_entries": 60,
+  "cagr": 0.098558,
+  "max_drawdown": -0.151722,
+  "weekly_decisions": 2283,
+  "frozen_spx_sha256": "c619984c0df1326737026faf430b94ada2f455799729e527e622efdc885e4d23",
+  "frozen_rates_sha256": "9c1461c71833c87c3a3f24e9308680bb1adee228bf889e56bffdd995e7a464cf"
+}

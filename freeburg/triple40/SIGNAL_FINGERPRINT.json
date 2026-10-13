@@ -1,0 +1,10 @@
+{
+  "profile": "freeburg_historical",
+  "start": "1970-10-02",
+  "end": "2013-09-27",
+  "weekly_decisions": 2244,
+  "equity_exposure_fraction": 0.537879,
+  "risk_on_entries": 65,
+  "cagr_90pct_cash": 0.118894,
+  "max_drawdown_90pct_cash": -0.18808
+}
