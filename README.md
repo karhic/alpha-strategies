@@ -17,12 +17,25 @@ This project started with Nelson Freeburg's 2013 MTA London presentation, **[Sys
 
 These are **Freeburg's own figures as transcribed from the presentation**, not returns earned by this code or verified live trading. The Prime/Discount slide showed an equity curve but the available reference did not establish a precise standalone CAGR and drawdown. Our historical reconstruction of Heine requires a proprietary bond-index history and is **not** claimed to be exact.
 
+### We reproduced the original 1970–2013 findings
+
+Reimplementing the historical rules and reconstructing their input data produced the following **independent retrospective matches** to Freeburg's published figures. These are not simply copied performance numbers:
+
+| Sleeve | Freeburg CAGR | Our reconstruction CAGR | Freeburg max DD | Our reconstruction max DD |
+|---|---:|---:|---:|---:|
+| Primas | 12.1% | **12.08%** | −16.4% | **−16.43%** |
+| Triple-40 | 12.0% | **11.89%** | −18.7% | **−18.81%** |
+| Pu Shen | 10.0% | **10.05%** | −15.1% | **−15.68%** |
+| Competitive Returns | 12.9% | **12.86%** | −35.9% | **−33.92%** |
+
+Each historical sleeve has a documented replay and data-lineage report ([Primas](freeburg/primas/README.md), [Triple-40](freeburg/triple40/README.md), [Pu Shen](freeburg/pushen/README.md), [Competitive Returns](freeburg/competitive/README.md)). **These are close retrospective reconstructions**, not certified original-vintage matches: they have historical source/timing assumptions, and Competitive substitutes a documented public Treasury-yield analogue. Historical six-sleeve headline parity is **not** claimed because Heine's exact bond inputs remain unresolved.
+
 ### What this repository adds
 
 - **One strategy implementation for backtests and forward signals.** The four production signal classes execute through the same `causaltrader` engine whether processing a historical event stream or a newly captured snapshot. There is no separate, independently rewritten live strategy.
-- **Real historical cross-checks:** the four-strategy **2014–August 2026** study replays **2,632 strategy-week decisions**, all matching an independent reference calculation; a ledger-to-portfolio-accounting bridge reproduces the stated simulated returns to numerical precision.
+- **Full historical rule reconstruction:** four 1970–2013 strategies closely reproduce Freeburg’s published return/drawdown fingerprints. Separately, the four-strategy **2014–August 2026** study replays **2,632 strategy-week decisions**, all matching an independent reference calculation; a ledger-to-portfolio-accounting bridge reproduces the stated simulated returns to numerical precision.
 - **Causality guards and visible provenance:** timestamp-aware event availability, append-only decision/audit logs, input SHA-256 hashes, missing/stale-data rejection, and a corrected month-end Baa observation convention. An assumed **90-day** lag protects quarterly earnings/dividend inputs from obvious premature use. **Those protections do not prove that every archived historical value was the unrevised figure available at the assumed date**, so the historical study is not described as fully PIT certified.
-- **A live-running, portable research monitor:** build and run with **one Docker Compose command**. The app independently acquires its *current* S&P, Federal Reserve/FRED, earnings and dividend feed data from publicly reachable providers; it computes, independently checks and records weekly **0/25/50/75/100% equity target weights**. **No brokerage or Twitter credentials required** for the default, non-trading container.
+- **One-command, live-running research monitor:** build and run with **one Docker Compose command**. The app independently acquires its *current* S&P, Federal Reserve/FRED, earnings and dividend feed data from publicly reachable providers; it computes, independently checks and records weekly **0/25/50/75/100% equity target weights**. **No brokerage or Twitter credentials required** for the default, non-trading container.
 
 ```bash
 docker compose up -d --build
@@ -181,7 +194,7 @@ docker compose run --rm freeburg freeburg.deploy.status
 
 The first run collects a **retrospective history for indicator warm-up**; this is not an independently historical point-in-time backtest. The monitor retries transient upstream outages and rejects stale or inconsistent inputs rather than silently making up a signal. Compose schedules capture on weekday evenings and retains signal history across restarts. Use `docker compose down` to stop without deleting data; `docker compose down -v` **deletes** the named data volume.
 
-**Reproducibility has two meanings here:** (1) a stranger can build the container and independently run the current research monitor, which was demonstrated in a clean-container test; (2) the entire 2014–2026 historical result can be rebuilt from contemporaneously available, independently licensed data. The latter is **not yet achieved**. Exact deterministic replay of the existing historical **model** is available with separately supplied source CSVs; see [instructions](freeburg/REPRODUCE_FOUR.md) and [engine-parity checks](freeburg/tools/verify_causal_parity.py).
+**How to audit the research:** the public Docker run independently acquires data for **today’s forward signals**. The historical strategies and performance-model arithmetic are runnable and auditable from documented scripts and input manifests, and the 2014–2026 four-sleeve ledger matches all 2,632 decisions. **One gap remains for a completely fresh, unaffiliated historical reproduction**: some older source snapshots (particularly S&P quarterly archives) cannot yet all be automatically downloaded; a clean historical replay therefore still needs separately acquired source files. This is a missing acquisition/packaging feature, **not** a limitation of the live one-command monitor. [Historical-source instructions](freeburg/REPRODUCE_FOUR.md) · [exact source-acquisition gap](freeburg/SP500_QUARTERLY_ACQUISITION.md).
 
 ## Forward operation, IBKR paper trading and X
 
