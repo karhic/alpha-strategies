@@ -41,7 +41,7 @@ Each historical sleeve has a documented replay and data-lineage report ([Primas]
 docker compose up -d --build
 ```
 
-That command works from a checkout of this repository. The setup has been tested in a clean container, with persistent signals and source captures. Once the repository is publicly available, new users can obtain it with `git clone https://github.com/karhic/alpha-strategies.git`. [Docker quickstart and status commands](#run-the-current-signal-monitor-with-docker).
+That command works from a checkout of this repository. The setup has been tested in a clean container, with persistent signals and source captures. Clone the repository with `git clone https://github.com/karhic/alpha-strategies.git`. [Docker quickstart and status commands](#run-the-current-signal-monitor-with-docker).
 
 ### What happened after Freeburg's talk? Our four-sleeve 2014–2026 study
 

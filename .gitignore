@@ -228,3 +228,17 @@ freeburg/**/data/*.jsonl
 freeburg/local/
 local/
 freeburg/snapshots/
+
+# Local operational secrets and execution state (never publish).
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*.json
+*secrets*.json
+**/x.env
+**/ibkr.env
+**/paper_runs/
+**/captures/
+**/orders/
+**/tokens/
