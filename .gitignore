@@ -216,3 +216,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Freeburg generated replay artifacts
+freeburg/*/data/*benchmark_events.jsonl
+freeburg/*/runs/
+
+# User-downloaded market data, provider responses and new local snapshots.
+# Do not accidentally commit vendor-licensed raw files or API credentials.
+freeburg/*/data/raw/
+freeburg/**/data/*.jsonl
+freeburg/local/
+local/
+freeburg/snapshots/

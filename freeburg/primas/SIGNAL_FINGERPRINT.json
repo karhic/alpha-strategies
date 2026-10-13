@@ -1,0 +1,9 @@
+{
+  "profile": "freeburg_benchmark_decisions",
+  "start": "1970-12-25",
+  "end": "2013-09-27",
+  "weekly_decisions": 2232,
+  "equity_exposure_fraction": 0.3951612903225806,
+  "risk_on_entries_diff_convention": 43,
+  "notes": "Entry count follows the canonical scratchpad convention: count only 0->1 transitions after the first valid observation. The first valid decision is already risk-on and is not counted as an entry."
+}

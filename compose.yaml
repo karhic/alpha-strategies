@@ -1,0 +1,21 @@
+services:
+  freeburg:
+    build: .
+    restart: unless-stopped
+    command: ["freeburg.deploy.portable_scheduler"]
+    volumes:
+      - freeburg-state:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 768m
+    pids_limit: 96
+volumes:
+  freeburg-state:
+# Historical reproduction is intentionally on-demand only:
+#   docker compose run --rm freeburg freeburg.tools.public_reproduce
+# It uses the same image and persistent /data volume, without any trade permissions.

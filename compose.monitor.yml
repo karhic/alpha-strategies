@@ -1,0 +1,22 @@
+services:
+  freeburg-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile.freeburg
+    command: ["freeburg.deploy.container_monitor"]
+    network_mode: host
+    user: "0:0" # read protected snapshots; filesystem read-only, no Linux capabilities
+    restart: unless-stopped
+    environment:
+      X_ENABLE_POSTING: "NO"
+    volumes:
+      - /var/lib/freeburg:/data:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 384m
+    pids_limit: 80
