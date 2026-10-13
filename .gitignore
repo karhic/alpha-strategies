@@ -242,3 +242,6 @@ freeburg/snapshots/
 **/captures/
 **/orders/
 **/tokens/
+
+# Source datasets are acquired by users; never commit vendor-derived data.
+freeburg/*/data/*.csv

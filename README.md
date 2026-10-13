@@ -58,6 +58,8 @@ The headline **four-sleeve** composite excludes Heine and Prime/Discount, whose 
 
 ¹ 60% S&P / 40% AGG bond-ETF return proxy, weekly rebalanced. ² Weekly excess returns versus T-bill carry, annualized by √52. **All figures are simulated research results, not live audited P&L.** The historical model assumes completed-Friday-close returns and uses some retrospectively archived economic values; it is not fully independently PIT-certified or net of trading costs. [Audit details](freeburg/REPRODUCIBILITY_AUDIT_2026-10-12.md).
 
+**Source/licensing note:** MIT-licensed code is included, but third-party historical input datasets are not redistributed. The one-command 2014–2026 replay obtains public-source inputs locally; standalone 1970–2013 archival replay helpers need separately acquired historical files. See [data licensing](DATA_LICENSING.md).
+
 ## How the strategy works
 
 Four simple, independently evaluated sleeves each vote **risk-on (100% equities)** or **risk-off (cash)** every week. Each receives 25% of the composite's notional capital, so the overall equity target is **0%, 25%, 50%, 75% or 100%**; any remainder is in the model's cash proxy. The project generates a **target allocation**, not a price forecast or a short position.
