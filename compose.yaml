@@ -16,3 +16,6 @@ services:
     pids_limit: 96
 volumes:
   freeburg-state:
+# Historical reproduction is intentionally on-demand only:
+#   docker compose run --rm freeburg freeburg.tools.public_reproduce
+# It uses the same image and persistent /data volume, without any trade permissions.

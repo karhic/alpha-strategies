@@ -1,3 +1,13 @@
+## One-command public-data historical attempt (Docker)
+
+```bash
+docker compose run --rm freeburg freeburg.tools.public_reproduce
+```
+
+This is **on-demand** and separate from the default forward signal monitor. It downloads available original S&P Wayback workbooks (1988–2022), fills 2022–2025 quarterlies using the **same** public AlphaQuery EPS and index-derived dividends as the live monitor, acquires S&P 500 closes, Fed H.15 and FRED histories, and checks all 2,632 decisions through the canonical causal engine. The command makes a full 2014–August 2026 portfolio calculation when all providers respond and pass the checks. Source snapshots, failed-stage progress and results are persisted under `/data/historical/public-rebuild` in the Docker volume. To start anew after a provider failure, choose a different empty `--output-dir` or intentionally clean that *historical* subfolder.
+
+**Evidence / limitations:** All required public-source inputs have been built and their historical results cross-compared successfully on the research VPS, but the entire network fetch has **not** been validated as one successful fresh-container run; Internet Archive availability is not guaranteed. Data from retrospective vendor snapshots may have been revised. Strict original-publication PIT timing and real executable Friday-after-close fills remain unverified, and this command does not claim them. Data suppliers may impose access/redistribution terms; the tool downloads locally instead of adding vendor content to Git. No brokerage credentials are needed.
+
 # Reproduce Freeburg 4: exact research-model calculations
 
 **Causal-engine parity:** The actual four strategy classes now reproduce **2,632/2,632 decisions** against the frozen research model (no mismatches), with separately hashed canonical ledgers. This is computational parity, not proof of historically available data or executable fills. Run `python -m freeburg.tools.verify_causal_parity --help` for the full audit CLI.

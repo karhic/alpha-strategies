@@ -23,7 +23,7 @@ def merge(archive:Path,eps:Path,div:Path,output:Path,*,overlap_eps_tol=0.011,ove
     historical=a[['as_reported_eps','dividends_per_share']].loc[START:END].copy()
     if historical.empty:raise ValueError('Missing archived S&P history')
     cutoff=historical.index.max()
-    if cutoff<pd.Timestamp('2022-06-30') or cutoff>=pd.Timestamp(END):
+    if cutoff<pd.Timestamp('2022-06-30'):
         # The current path explicitly cross-validates the published 17-archive
         # overlap; do not silently switch to future archive coverage.
         raise ValueError('Unexpected official archive cutoff; review provenance and rerun')
@@ -40,7 +40,8 @@ def merge(archive:Path,eps:Path,div:Path,output:Path,*,overlap_eps_tol=0.011,ove
     if epserr.max()>overlap_eps_tol:raise ValueError('Secondary EPS disagrees with official archived history')
     if diverr.max()>overlap_div_tol:raise ValueError('Index-derived dividends disagree with official archived history')
     late=required[required>cutoff]
-    if len(late)<1:raise ValueError('No quarters requiring public secondary fallback')
+    # The historical archive might eventually cover every target quarter.
+    # That is preferable to a secondary fallback and must also work.
     second=e.reindex(late)['as_reported_eps']; dividends=d.reindex(late)['dividends_per_share']
     if second.isna().any() or dividends.isna().any():raise ValueError('Public-secondary fallback missing required late quarter')
     if (second<=-500).any() or (dividends<0).any():raise ValueError('Invalid quarterly values')
@@ -50,8 +51,8 @@ def merge(archive:Path,eps:Path,div:Path,output:Path,*,overlap_eps_tol=0.011,ove
     combined.to_csv(output)
     record={'schema':'freeburg.public-quarterly-rebuild.v1','classification':'RETROSPECTIVE_COMPUTATIONAL_RECONSTRUCTION_NOT_PIT',
        'archived_s_and_p_quarters':len(verified),'last_archived_quarter':cutoff.strftime('%Y-%m-%d'),
-       'secondary_source_quarters':len(late),'first_secondary_quarter':late[0].strftime('%Y-%m-%d'),
-       'last_quarter':late[-1].strftime('%Y-%m-%d'),
+       'secondary_source_quarters':len(late),'first_secondary_quarter':late[0].strftime('%Y-%m-%d') if len(late) else None,
+       'last_quarter':required[-1].strftime('%Y-%m-%d'),
        'eps_provider':'AlphaQuery S&P 500 actual EPS HTML (same as forward monitor)',
        'dividend_provider':'S&P price/total-return index closes via Yahoo (same as forward monitor)',
        'official_overlap':{'EPS_n':int(len(epserr)),'max_abs_EPS':float(epserr.max()),
