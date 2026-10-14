@@ -2,6 +2,11 @@
 
 **A 2013 trading talk. Six decades-old systematic strategies. One independently runnable, auditable signal engine.**
 
+**[Weekly forward signals on X: @skyboyresearch](https://x.com/skyboyresearch)** · **[Standalone CausalTrader engine](https://github.com/karhic/causal-trading-engine)**
+
+**Forward status (14 October 2026):** live market-data capture and automated weekly X publication are operational. A separate Interactive Brokers **paper-account** integration connects to IB Gateway and attempts SPY target-allocation orders; **no paper fills or realized paper-trading P&L have been verified**. The most recent SPY paper order was rejected under an EU retail-investor KID/product-eligibility restriction. The market-timing signal and broker-execution results are separate, and the Docker demonstration does not place trades.
+
+
 This project started with Nelson Freeburg's 2013 MTA London presentation, **[Systematic Market Analysis: Expanding Opportunities and Managing Risk](https://cmtassociation.org/video/systematic-market-analysis-expanding-opportunities-and-managing-risk-2/)** ([CMT presenter/video archive](https://cmtassociation.org/presenter/nelson-freeburg/)). Freeburg revisited mechanical market-timing ideas originating with earlier researchers, many published years or decades before his talk, and tested them on US-market history reaching back to **1970**. His philosophy: **avoid devastating drawdowns so compounding has a better chance to produce strong long-run returns**. Avoiding a 50% loss, which takes a 100% gain merely to recover, can matter more than capturing every rally.
 
 ### Freeburg's original reported results, approximately 1970–September 2013
@@ -206,9 +211,9 @@ docker compose run --rm freeburg freeburg.tools.public_reproduce
 
 ## Forward operation, IBKR paper trading and X
 
-The research VPS runs a **forward signal-capture service** with independent shadow verification, a Docker read-only monitor and separately gated scheduler jobs. One IBKR **paper** account is configured for an attempted Monday SPY target-weight rebalance, subject to broker permissions, source freshness, order-size caps and idempotency checks. **This is a paper-trading prototype, not production/live-money execution; successful order placement and fills should not be inferred from a scheduled timer.** The Docker demo has no order permission. [Paper workflow and operational gates](freeburg/deploy/AUTOPAPER.md) · [Docker monitor architecture](freeburg/deploy/DOCKER_OPERATIONS.md).
+The research VPS runs a **forward signal-capture service** with independent shadow verification, a Docker read-only monitor and separately gated scheduler jobs. One IBKR **paper** account is configured for an attempted Monday SPY target-weight rebalance, subject to broker permissions, source freshness, order-size caps and idempotency checks. **This is a paper-trading prototype, not production/live-money execution; successful order placement and fills should not be inferred from a scheduled timer. On 13 October 2026 the attempted SPY paper-market order was **rejected by IBKR** because the paper account is classified as an EU retail client and SPY lacks an eligible KID; no executed paper position or P&L is claimed.** The Docker demo has no order permission. [Paper workflow and operational gates](freeburg/deploy/AUTOPAPER.md) · [Docker monitor architecture](freeburg/deploy/DOCKER_OPERATIONS.md).
 
-The X/Twitter publishing integration currently prepares signal drafts and is deliberately **not posting** without separately configured API access and explicit permission. [Publication setup](freeburg/deploy/AUTO_X.md). Neither broker credentials nor social-network credentials belong in Git. The forward signal record includes raw-source provenance and hashes for later inspection.
+The separately configured VPS X integration has successfully published forward signals to [@skyboyresearch](https://x.com/skyboyresearch); the default Docker demo remains draft-only and does not need social-media credentials. [Publication setup](freeburg/deploy/AUTO_X.md). Neither broker credentials nor social-network credentials belong in Git. The forward signal record includes raw-source provenance and hashes for later inspection.
 
 ## Repository map and verification
 
